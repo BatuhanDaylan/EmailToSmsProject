@@ -56,6 +56,7 @@ namespace EmailToSms.Api.Controllers
         }
 
         //giriş yapma işlemleri
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
