@@ -29,6 +29,7 @@ namespace EmailToSms.Api.Controllers
             return User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         }
 
+        //E-posta kayıt methodu
         [HttpPost]
         public async Task<IActionResult> AddAccount([FromBody] EmailAccountCreateDto dto) 
         {
@@ -51,6 +52,28 @@ namespace EmailToSms.Api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "E-posta hesabı başarıyla eklendi", AccountId = newAccount.Id});
+        }
+
+        //E-posta listeleme methodu
+        [HttpGet]
+        public async Task<IActionResult> GetMyAccounts()
+        {
+
+            //kullanıcı Idsini çekiyoruz
+            var userId = GetUserId();
+
+            //girilmiş olan mail bilgilerini liste haline getirip çekiyoruz
+            var accounts = await _context.EmailAccounts
+                .Where(e => e.UserId == userId)
+                .Select(e => new EmailAccountResponseDto
+                {
+                    Id = e.Id,
+                    EmailAdress = e.EmailAddress,
+                    LastChecked = e.LastChecketAt
+
+                })
+                .ToListAsync();
+            return Ok(accounts);
         }
 
 

@@ -28,6 +28,7 @@ AuthController içerisine kullanıcı giriş işlemleri, token işlemlerini yapa
 Kullanıcının email eklerken kullanacağı DTO yazıldı
 Kullanıcıya eklediği mailleri listeleyeceğimiz yapı yazıldı
 Mail hesaplarının işlemlerinin yapılacağı EmailAccountsController eklendi mail kayıt eden method yazıldı
+Gİrilmiş mailleri listeleyecek olan method yazıldı
 
 
 
