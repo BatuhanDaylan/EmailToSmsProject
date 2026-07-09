@@ -22,6 +22,12 @@ AppDbContext sınıfı silindi ve Identity ile uygulama kısmı için iki ayrı 
 Program.cs içindeki IdentityDbContext ve DbContext ekleme kodları düzenlendi 
 Projemdeki bir yanlışıda ben farkettim telefon numaraları kurallar içinde bir listede tutuluyordu artık telefon numaraları için ayrı bir sınıf yazıldı
 Migration komutları ile Uygulama ve Identity için iki farklı veritabanı oluşturuldu
+Controllers içerisine authorization ve JWT işlemlerini yapacak AuthController sınıfı eklendi
+AuthController içerisine kullanıcı kayıt işlemlerini yapacak yapı yazıldı
+AuthController içerisine kullanıcı giriş işlemleri, token işlemlerini yapacak yapı yazıldı
+Kullanıcının email eklerken kullanacağı DTO yazıldı
+Kullanıcıya eklediği mailleri listeleyeceğimiz yapı yazıldı
+
 
 
 

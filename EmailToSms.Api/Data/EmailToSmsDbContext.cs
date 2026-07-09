@@ -21,7 +21,7 @@ namespace EmailToSms.Api.Data
 
             //Tablolar arası ilişkileri garanti altına alıyoruz
 
-            //E-posta hesabı silinirse ona bağlı kurallar da otomatik silinsin (Cascade Delete)
+            //E-posta hesabı silinirse ona bağlı kurallar da otomatik silinsin 
             modelBuilder.Entity<ForwardingRule>()
                 .HasOne(r => r.EmailAccount)
                 .WithMany(e => e.Rules)
