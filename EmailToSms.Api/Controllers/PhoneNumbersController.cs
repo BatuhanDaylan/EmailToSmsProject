@@ -56,5 +56,34 @@ namespace EmailToSms.Api.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { Message = "Telefon numarası başarıyla eklendi" , RulePhoneNumberId = newPhoneNumber.Id });
         }
+
+        //numara listeleme methodu
+        [HttpGet("rule/{ruleId}")]
+        public async Task<IActionResult> GetNumbersByRule(int ruleId)
+        {
+            var userId = GetUserId();
+
+            //ıdyi kontrol ediyoruz
+            var ruleExist = await _context.ForwardingRules
+                .AnyAsync(r => r.Id == ruleId && r.EmailAccount!.UserId == userId);
+
+            if(!ruleExist)
+            {
+                return Unauthorized(new { MEssage = "Bu kural size ait değil veya bulunamadı" });
+            }
+
+            //numaraları listeliyoruz
+            var numbers = await _context.RulePhoneNumbers
+                .Where(p => p.ForwardingRuleId == ruleId)
+                .Select(p => new PhoneNumberResponseDto
+                {
+                    Id = p.Id,
+                    PhoneNumber = p.PhoneNumber,
+                })
+                .ToListAsync();
+
+            //listelediğimiz numaralarımızı döndürüyoruz
+            return Ok(numbers);
+        }
     }
 }
