@@ -69,7 +69,7 @@ namespace EmailToSms.Api.Controllers
 
             if(!ruleExist)
             {
-                return Unauthorized(new { MEssage = "Bu kural size ait değil veya bulunamadı" });
+                return Unauthorized(new { Message = "Bu kural size ait değil veya bulunamadı" });
             }
 
             //numaraları listeliyoruz
@@ -85,5 +85,37 @@ namespace EmailToSms.Api.Controllers
             //listelediğimiz numaralarımızı döndürüyoruz
             return Ok(numbers);
         }
+
+        //numara güncelleme methodu
+        [HttpPost("{id}")]
+        public async Task<IActionResult> UpdatePhoneNumber(int id , [FromBody] PhoneNumberUpdateDto dto)
+        {
+            var userId = GetUserId();
+
+            if(string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                return BadRequest(new { Message = "Telefon numarası boş olamaz" });
+            }
+
+            //Kuralın ve mail adresinin ıdsi kontrol ediliyor
+            var phoneNumber = await _context.RulePhoneNumbers
+                .Include(p => p.ForwardingRule)
+                .ThenInclude(r => r!.EmailAccount)
+                .FirstOrDefaultAsync(p => p.Id == id && p.ForwardingRule!.EmailAccount.UserId == userId);
+
+            if(phoneNumber == null)
+            {
+                return NotFound(new { Message = "Telefon numarası bulunamadı yada yetkiniz yok" });
+            }
+
+            //telefon numaramızı değiştiriyoruz
+            phoneNumber.PhoneNumber = dto.PhoneNumber;
+
+            //değiştirilen numara veri tabanında değiştirilir
+            await _context.SaveChangesAsync();
+            return Ok(new { Message = "Telefon numaranız başarıyla değiştirildi" });
+        }
+
+
     }
 }
