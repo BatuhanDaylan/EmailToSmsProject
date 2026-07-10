@@ -39,6 +39,7 @@ EmailAccountsController içerisine email güncelleme methodu eklende ilgili DTOs
 ForwardingRulesController içerisindeki telefon numaraları ile ilgili methodlar çıkarıldı kural güncelleme metodu ve ilgili DTOsu eklendi
 Telefon numaraları ekleme listeleme güncelleme ve silme methodları için PhoneNumbersController ve gerekli DTOları eklendi
 Telefon numaralarının eklenmesini sağlayan method eklendi
+Telefon numaralarının listelenmesini güncellenmesini ve silinmesini sağlayan methodlar eklendi
 
 
 

@@ -116,6 +116,28 @@ namespace EmailToSms.Api.Controllers
             return Ok(new { Message = "Telefon numaranız başarıyla değiştirildi" });
         }
 
+        //numara silme methodu
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoneNumber(int id)
+        {
+            var userId = GetUserId();
 
+            //Kuralın ve mail adresinin ıdsi kontrol ediliyor
+            var phoneNumber = await _context.RulePhoneNumbers
+                .Include(p => p.ForwardingRule)
+                .ThenInclude(r => r!.EmailAccount)
+                .FirstOrDefaultAsync(p => p.Id == id && p.ForwardingRule!.EmailAccount.UserId == userId);
+
+            if(phoneNumber == null)
+            {
+                return NotFound(new { Message = "Telefon numarası bulunamadı yada yetkiniz yok" });
+            }
+
+            //telefon numarasını veritabanından silip kaydediyoruz
+            _context.RulePhoneNumbers.Remove(phoneNumber);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Numara başarıyla silindi" });
+        }
     }
 }
