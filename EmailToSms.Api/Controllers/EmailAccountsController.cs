@@ -41,10 +41,11 @@ namespace EmailToSms.Api.Controllers
             var newAccount = new EmailAccount
             {
                 UserId = userId,
-                EmailAddress = dto.EmailAdress,
+                EmailAddress = dto.EmailAddress,
                 TenantId = dto.TentantId,
                 ClientId = dto.ClientId,
                 ClientSecret = dto.ClientSecret,
+                LastChecketAt = DateTime.UtcNow,
             };
 
             //bilgileri databaseimize ekleyip kaydediyoruz
@@ -68,13 +69,36 @@ namespace EmailToSms.Api.Controllers
                 .Select(e => new EmailAccountResponseDto
                 {
                     Id = e.Id,
-                    EmailAdress = e.EmailAddress,
+                    EmailAddress = e.EmailAddress,
                     LastChecked = e.LastChecketAt
 
                 })
                 .ToListAsync();
             return Ok(accounts);
         }
+
+        //E-posta güncelleme methodu
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAccount(int id , EmailAccountUpdateDto dto)
+        {
+            //kullanıcı Idsini çekiyoruz
+            var userId = GetUserId();
+
+            //sadece kullanıcıya ait E-Posta hesabı silinecek
+            var account = await _context.EmailAccounts
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId );
+
+            //hesabı güncelliyoruz
+            account.EmailAddress = dto.EmailAddress;
+            account.TenantId = dto.TentantId;
+            account.ClientId = dto.ClientId;
+            account.ClientSecret = dto.ClientSecret;
+
+            //değişiklikleri veritabanına kaydediyoruz
+            await _context.SaveChangesAsync();
+            return Ok(new {Message = "E-Posta hesabı bilgileri başarıyla güncellendi"});
+        }
+
 
         //E-posta silme meethodu
         [HttpDelete("{id}")]
@@ -85,12 +109,12 @@ namespace EmailToSms.Api.Controllers
 
             //silinmek istenen hesabı buluyoruz sadece o kullanıcıya aitse silinecek
             var account = await _context.EmailAccounts
-                .FirstOrDefaultAsync(e => e.Id == id && e.UserId==userId);
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId );
 
             if (account == null) return NotFound(new { Message = "E-Posta bulunamadı veya yetkiniz yok" });
-            _context.EmailAccounts.Remove(account);
 
             //hesabı silip databaseimize kaydediyoruz
+            _context.EmailAccounts.Remove(account);
             await _context.SaveChangesAsync();
             return Ok(new { Message = "E-Posta hesabı başarıyla silindi" });
 
