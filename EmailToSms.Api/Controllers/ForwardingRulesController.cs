@@ -10,7 +10,10 @@ using Microsoft.Graph.Models;
 
 namespace EmailToSms.Api.Controllers
 {
-    public class ForwardingRulesController : Controller
+    [Authorize]
+    [Route("api/[Controller]")]
+    [ApiController]
+    public class ForwardingRulesController : ControllerBase
     {
 
         //Veritabanımızı enjekte ediyoruz
