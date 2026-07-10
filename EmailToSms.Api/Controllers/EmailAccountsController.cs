@@ -13,7 +13,7 @@ namespace EmailToSms.Api.Controllers
     [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
-    public class EmailAccountsController : Controller
+    public class EmailAccountsController : ControllerBase
     {
 
         //uygulama veritabanımızı enjekte ediyotuz
@@ -51,7 +51,7 @@ namespace EmailToSms.Api.Controllers
             _context.EmailAccounts.Add(newAccount);
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "E-posta hesabı başarıyla eklendi", AccountId = newAccount.Id});
+            return Ok(new { Message = "E-Posta hesabı başarıyla eklendi", AccountId = newAccount.Id});
         }
 
         //E-posta listeleme methodu
@@ -74,6 +74,26 @@ namespace EmailToSms.Api.Controllers
                 })
                 .ToListAsync();
             return Ok(accounts);
+        }
+
+        //E-posta silme meethodu
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAccount(int id)
+        {
+            //kullanıcı Idsini çekiyoruz
+            var userId = GetUserId();
+
+            //silinmek istenen hesabı buluyoruz sadece o kullanıcıya aitse silinecek
+            var account = await _context.EmailAccounts
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId==userId);
+
+            if (account == null) return NotFound(new { Message = "E-Posta bulunamadı veya yetkiniz yok" });
+            _context.EmailAccounts.Remove(account);
+
+            //hesabı silip databaseimize kaydediyoruz
+            await _context.SaveChangesAsync();
+            return Ok(new { Message = "E-Posta hesabı başarıyla silindi" });
+
         }
 
 
