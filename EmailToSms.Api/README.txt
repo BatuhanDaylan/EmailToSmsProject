@@ -40,6 +40,8 @@ ForwardingRulesController içerisindeki telefon numaraları ile ilgili methodlar
 Telefon numaraları ekleme listeleme güncelleme ve silme methodları için PhoneNumbersController ve gerekli DTOları eklendi
 Telefon numaralarının eklenmesini sağlayan method eklendi
 Telefon numaralarının listelenmesini güncellenmesini ve silinmesini sağlayan methodlar eklendi
+Mesajları şu anlık konsol ekranına yazdıracak SmsService sınıfı yazıldı
+
 
 
 
