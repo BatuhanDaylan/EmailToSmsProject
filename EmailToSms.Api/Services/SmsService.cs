@@ -1,4 +1,6 @@
-﻿namespace EmailToSms.Api.Services
+﻿using Microsoft.Extensions.Logging;
+
+namespace EmailToSms.Api.Services
 {
     public class SmsService : ISmsService
     {

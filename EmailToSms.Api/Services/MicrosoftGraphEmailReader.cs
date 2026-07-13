@@ -5,8 +5,14 @@ using Microsoft.Graph.Models;
 
 namespace EmailToSms.Api.Services
 {
-    public class MicrosoftGraphEmailReader
+    public class MicrosoftGraphEmailReader : IMicrosoftGraphEmailReader
     {
+        private readonly ISmsService _smsService;
+        public MicrosoftGraphEmailReader(ISmsService smsService)
+        {
+            _smsService = smsService;
+        }
+
 
         //Yazdığımız bu method sayesinde email mesajlarının göndericisi, konusu ve içeriği ile ilgili kuralları kontrol ediyoruz
         public bool CheckIfEmailRuleMatches(Message emailMessage,ForwardingRule rule)
@@ -32,7 +38,7 @@ namespace EmailToSms.Api.Services
             return matches;
         }
 
-        public async Task ReadEmailAndProcessAsync(EmailAccount account, ISmsService smsService)
+        public async Task ReadEmailAndProcessAsync(EmailAccount account)
         {
             //Azure portal üzerinden uygulama kaydı oluşturulduktan sonra Graph API'ye erişim sağlamak için gerekli olan anahtarı alan bir nesne oluşturuyoruz
             var credential = new ClientSecretCredential(account.TenantId, account.ClientId, account.ClientSecret);
@@ -41,6 +47,9 @@ namespace EmailToSms.Api.Services
 
             try
             {
+                //graph apinin anlayabilmesi için tarihi evrensel formata çevirme
+                string lastCheckedString = account.LastChecketAt.ToString("yyyy-MM-ddTHH:mm:ssZ");
+
                 //En üstteki 10 okunmamış maili alırız 
                 //Geliş tarihi son kontrol edilenden sonra ise maili alırız
                 //En eski meilden yeni maile göre sıralarız
@@ -48,7 +57,7 @@ namespace EmailToSms.Api.Services
                     .GetAsync(config =>
                     {
                         config.QueryParameters.Top = 10;
-                        config.QueryParameters.Filter = "isRead eq false and receivedDateTime ge {lastCheckedString}";
+                        config.QueryParameters.Filter = $"isRead eq false and receivedDateTime ge {lastCheckedString}";
                         config.QueryParameters.Orderby = new[] { "receivedDateTime asc" };
                     });
 
@@ -68,8 +77,7 @@ namespace EmailToSms.Api.Services
 
                             foreach (var targetPhoneNumber in rule.TargetPhoneNumbers)
                             {
-                                await smsService.SendSmsAsync(targetPhoneNumber.PhoneNumber, smsText);
-                                wasSmsSent = true;
+                                await _smsService.SendSmsAsync(targetPhoneNumber.PhoneNumber, smsText);
                             }
                         }
                     }
@@ -81,6 +89,7 @@ namespace EmailToSms.Api.Services
                     };
                     await graphClient.Users[account.EmailAddress].Messages[message.Id].PatchAsync(requestBody);
                 }
+                //burada bir yazım yanlışı var düzeltilmeli
                 account.LastChecketAt = DateTime.UtcNow;
 
             }

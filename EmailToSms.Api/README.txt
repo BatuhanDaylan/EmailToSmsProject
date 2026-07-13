@@ -41,6 +41,10 @@ Telefon numaraları ekleme listeleme güncelleme ve silme methodları için Phon
 Telefon numaralarının eklenmesini sağlayan method eklendi
 Telefon numaralarının listelenmesini güncellenmesini ve silinmesini sağlayan methodlar eklendi
 Mesajları şu anlık konsol ekranına yazdıracak SmsService sınıfı yazıldı
+Arka planda çalışacak olan EmailCheckerWorker servisi yazıldı
+IMicrosoftGraphEmailReader servisi yazıldı
+MicrosoftGraphEmailReader servisi IMigrosoftGraphEmailReader servisine göre düzenlendi ve kod iyileştirmeleri yapıldı
+
 
 
 
