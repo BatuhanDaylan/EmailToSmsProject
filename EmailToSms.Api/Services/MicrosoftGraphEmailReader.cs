@@ -15,11 +15,11 @@ namespace EmailToSms.Api.Services
 
 
         //Yazdığımız bu method sayesinde email mesajlarının göndericisi, konusu ve içeriği ile ilgili kuralları kontrol ediyoruz
-        public bool CheckIfEmailRuleMatches(Message emailMessage,ForwardingRule rule)
+        public bool CheckIfEmailRuleMatches(Message emailMessage, ForwardingRule rule)
         {
             bool matches = true;
 
-            if(!string.IsNullOrWhiteSpace(rule.SenderKeyword))
+            if (!string.IsNullOrWhiteSpace(rule.SenderKeyword))
             {
                 var sender = emailMessage.From?.EmailAddress?.Address?.ToLower() ?? "";
                 if (!sender.Contains(rule.SenderKeyword.ToLower())) matches = false;
@@ -47,8 +47,9 @@ namespace EmailToSms.Api.Services
 
             try
             {
-                //graph apinin anlayabilmesi için tarihi evrensel formata çevirme
-                string lastCheckedString = account.LastChecketAt.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                //graph apinin anlayabilmesi için tarihi ISO 8601 formatında alıp tek tırnak içine sarıyoruz
+                var lastCheckedIso = account.LastChecketAt.ToString("o");
+                var lastCheckedQuoted = $"'{lastCheckedIso}'";
 
                 //En üstteki 10 okunmamış maili alırız 
                 //Geliş tarihi son kontrol edilenden sonra ise maili alırız
@@ -57,14 +58,18 @@ namespace EmailToSms.Api.Services
                     .GetAsync(config =>
                     {
                         config.QueryParameters.Top = 10;
-                        config.QueryParameters.Filter = $"isRead eq false and receivedDateTime ge {lastCheckedString}";
+                        config.QueryParameters.Filter = $"isRead eq false and receivedDateTime ge {lastCheckedQuoted}";
                         config.QueryParameters.Orderby = new[] { "receivedDateTime asc" };
                     });
+
+                if (messages?.Value == null || messages.Value.Count == 0)
+                {
+                    return;
+                }
 
                 //Her bir mail için her bir kuralı kontrol ederiz
                 foreach (var message in messages.Value)
                 {
-                    bool wasSmsSent = false;
                     foreach (var rule in account.Rules)
                     {
                         //Eğer mail kurallara uyuyorsa sms göndeririz
@@ -87,16 +92,20 @@ namespace EmailToSms.Api.Services
                     {
                         IsRead = true
                     };
-                    await graphClient.Users[account.EmailAddress].Messages[message.Id].PatchAsync(requestBody);
-                }
-                //burada bir yazım yanlışı var düzeltilmeli
-                account.LastChecketAt = DateTime.UtcNow;
 
+                    // güvenlik: message.Id null olabilir -> kontrol et
+                    if (!string.IsNullOrWhiteSpace(message.Id))
+                    {
+                        await graphClient.Users[account.EmailAddress].Messages[message.Id].PatchAsync(requestBody);
+                    }
+                }
+
+                account.LastChecketAt = DateTime.UtcNow;
             }
-            //Oluşan hataları cacth ile yakalıyoruz
-            catch (Exception ex) 
+            //Oluşan hataları catch ile yakalıyoruz
+            catch (Exception ex)
             {
-                Console.WriteLine($"Email okunurken hata oluştu{ex.Message}");
+                Console.WriteLine($"Email okunurken hata oluştu: {ex.Message}");
             }
         }
     }
