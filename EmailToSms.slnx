@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="EmailToSms.Api/EmailToSms.Api.csproj" />
+  <Project Path="EmailToSms.Web/EmailToSms.Web.csproj" Id="847284f1-8a7c-491c-898f-f07861df66a1" />
 </Solution>
