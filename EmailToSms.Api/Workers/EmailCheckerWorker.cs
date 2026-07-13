@@ -3,7 +3,7 @@ using EmailToSms.Api.Data;
 using EmailToSms.Api.Services;
 using Microsoft.Extensions.Hosting;
 
-namespace EmailToSms.Api.Services
+namespace EmailToSms.Api.Workers
 {
     public class EmailCheckerWorker : BackgroundService
     {

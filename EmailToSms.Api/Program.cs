@@ -1,36 +1,33 @@
 using EmailToSms.Api.Data;
 using EmailToSms.Api.Models;
+using EmailToSms.Api.Services;
+using EmailToSms.Api.Workers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
-//Uygulama veritabanı bağlantısı
 builder.Services.AddDbContext<EmailToSmsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//Kimlik veritabanı bağlantısı
 builder.Services.AddDbContext<EmailToSmsIdentityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityConnection")));
 
-//Identity servislerinin eklenmesi"
-//Artık EmailToSmsUser sınıfımızı ve EmailToSmsIdentityDbContext beynimizi kullanıyor
 builder.Services.AddIdentity<EmailToSmsUser, IdentityRole>()
     .AddEntityFrameworkStores<EmailToSmsIdentityDbContext>()
     .AddDefaultTokenProviders();
 
-var app = builder.Build();
+builder.Services.AddScoped<ISmsService, SmsService>();
+builder.Services.AddScoped<IMicrosoftGraphEmailReader, MicrosoftGraphEmailReader>();
 
-//  Kimlik Doğrulama Ayarları
+builder.Services.AddHostedService<EmailCheckerWorker>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,10 +48,46 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Configure the HTTP request pipeline.
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "EmailToSms API", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Lütfen 'Bearer {token}' formatında giriş yapın. Örnek: Bearer eyJhbG...",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            },
+            new List<string>()
+        }
+    });
+});
+
+var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

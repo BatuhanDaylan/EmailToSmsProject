@@ -44,7 +44,8 @@ Mesajları şu anlık konsol ekranına yazdıracak SmsService sınıfı yazıld�
 Arka planda çalışacak olan EmailCheckerWorker servisi yazıldı
 IMicrosoftGraphEmailReader servisi yazıldı
 MicrosoftGraphEmailReader servisi IMigrosoftGraphEmailReader servisine göre düzenlendi ve kod iyileştirmeleri yapıldı
-
+Program.cs içerisindeki kodlar swagger a göre yeniden düzenlendi bu kısımda Microsoft.OpenApi paketi ile swagger için gerekli olan Swashbuckle.AspNetCore paketi çakıştı hatanın tespiti ve çözümü çok uzun sürdü ancak sonunda iki pakette uyumlu çalışabilecekleri daha eski kararlı sürümlere çekildi ve sorun çözüldü
+EmailCheckerWorker services klasörünün içerisinden workers klasörüne taşındı
 
 
 
