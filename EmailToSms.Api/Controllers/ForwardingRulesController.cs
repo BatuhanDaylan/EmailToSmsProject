@@ -94,6 +94,11 @@ namespace EmailToSms.Api.Controllers
                 .Include(r => r.EmailAccount)
                 .FirstOrDefaultAsync(r => r.Id == id && r.EmailAccount!.UserId == userId);
 
+            if (rule == null)
+            {
+                return NotFound(new { Message = "Kural bulunamadı veya yetkiniz yok" });
+            }
+
             //kuralı güncelliyoruz
             rule.SenderKeyword = dto.SenderKeyword;
             rule.SubjectKeyword = dto.SubjectKeyword;

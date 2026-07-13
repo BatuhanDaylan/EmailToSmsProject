@@ -1,7 +1,10 @@
-﻿namespace EmailToSms.Api.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EmailToSms.Api.DTOs
 {
     public class ForwardingRuleCreateDto
     {
+        [Required]
         public int EmailAccountId { get; set; }
         public string? SenderKeyword { get; set; }
         public string? SubjectKeyword { get; set; }

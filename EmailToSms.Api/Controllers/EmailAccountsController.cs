@@ -88,6 +88,11 @@ namespace EmailToSms.Api.Controllers
             var account = await _context.EmailAccounts
                 .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId );
 
+            if (account == null)
+            {
+                return NotFound(new { Message = "E-Posta bulunamadı veya yetkiniz yok" });
+            }
+
             //hesabı güncelliyoruz
             account.EmailAddress = dto.EmailAddress;
             account.TenantId = dto.TentantId;
