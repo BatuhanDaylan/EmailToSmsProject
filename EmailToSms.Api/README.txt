@@ -48,6 +48,9 @@ Program.cs içerisindeki kodlar swagger a göre yeniden düzenlendi bu kısımda
 EmailCheckerWorker services klasörünün içerisinden workers klasörüne taşındı
 MicrosoftGraphEmailReader içerisinde graph apinin anlayabilmesi için tarihi ISO 8601 formatına alındı
 DTO larda eksik olan required kısımları eklendi
+Web katmanı için mvc web projesi oluşturuldu
+token bağlantısı için TokenHandler servisi yazıldı ve program.cs içerisine gerekli kodlar eklendi
+
 
 
 
