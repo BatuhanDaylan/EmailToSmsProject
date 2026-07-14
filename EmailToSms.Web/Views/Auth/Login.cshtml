@@ -1,0 +1,44 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm mt-5">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4">Giriş Yap</h3>
+
+                <!-- asp-action="Login" ile formu AuthController'daki POST Login metoduna yönlendiriyoruz -->
+                <form asp-action="Login" method="post">
+
+                    <!-- Genel form hatalarını (örneğin "E-posta veya şifre hatalı") burada gösteriyoruz -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">E-Posta Adresi</label>
+                        <!-- asp-for sayesinde input'un name, id ve type özellikleri ViewModel'den otomatik okunur -->
+                        <input asp-for="Email" class="form-control" placeholder="ornek@mail.com" />
+                        <!-- ViewModel'deki [Required] veya [EmailAddress] hataları bu span içinde kırmızı renkte çıkar -->
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Şifre</label>
+                        <!-- ViewModel'de [DataType(DataType.Password)] yazdığımız için bu alan otomatik type="password" olur -->
+                        <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a asp-action="Register" class="text-decoration-none">Hesabın yok mu? Hemen kayıt ol.</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -23,7 +23,7 @@ namespace EmailToSms.Web.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             //kurallar kontrol edilir uymuyorsa hatalarla birlikte yollanır
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
@@ -54,7 +54,7 @@ namespace EmailToSms.Web.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             //kurallaar kontrol edilir uymuyorsa hatalarla birlikte yollanır
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }

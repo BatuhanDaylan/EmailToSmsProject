@@ -1,4 +1,4 @@
-using EmailToSms.Web.Models;
+using EmailToSms.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

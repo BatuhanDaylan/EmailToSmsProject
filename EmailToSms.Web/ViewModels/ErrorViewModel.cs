@@ -1,4 +1,4 @@
-namespace EmailToSms.Web.Models
+namespace EmailToSms.Web.ViewModels
 {
     public class ErrorViewModel
     {

@@ -4,3 +4,7 @@ LoginViewModel ve RegisterViewModel eklendi
 AuthController eklendi AuthController içerisine login get post methodları eklendi
 AuthController içerisine register get post methodları eklendi
 AuthController içerisine logout methodu eklendi
+ViewModels içerisine LoginViewModel ve RegisterViewModel eklendi 
+Views/Auth içerisine Login ve Register eklendi
+İki projenin portları düzenlendi
+Çıkan hatalar düzeltildi
