@@ -15,3 +15,4 @@ EmailAccountService eklendi içerisine apiden veri çekip listeleyecek method ya
 EmailAccountService içerisine girilen verileri apiye yollayacak method yazıldı
 EmailAccountService içerisine güncellenen verileri apiye yollayacak method yazıldı
 EmailAccountService içerisine ver silen method yazıldı
+EmailAccountController eklendi içerisine listeleme yapan method yazıldı
