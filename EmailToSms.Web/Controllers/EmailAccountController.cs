@@ -39,7 +39,7 @@ namespace EmailToSms.Web.Controllers
 
             //apiye kayıt isteği atılır başarılıysa listeleme sayfasına döndürür
             var isSuccess = await _emailAccountService.AddAccountAsync(model);
-            if (isSuccess) return RedirectToAction("index");
+            if (isSuccess) return RedirectToAction("Index");
 
             //diğer durumlarda hata verir
             ModelState.AddModelError(string.Empty, "Hesap eklenirken bir hata oluştu.");
@@ -73,13 +73,20 @@ namespace EmailToSms.Web.Controllers
 
             //apiye güncelleme isteği atılır başarılıysa listeleme sayfasına döndürür
             var isSuccess = await _emailAccountService.UpdateAccountAsync(id , model);
-            if (isSuccess) return RedirectToAction("index");
+            if (isSuccess) return RedirectToAction("Index");
 
             //diğer durumlarda hata verir
             ModelState.AddModelError(string.Empty, "Güncelleme sırasında bir hata oluştu.");
             return View(model);
         }
 
+        //kullanıcının veri silmesi
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _emailAccountService.DeleteAccountAsync(id);
+            return RedirectToAction("Index");
+        }
 
     }
 }
