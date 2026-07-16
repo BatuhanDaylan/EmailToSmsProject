@@ -28,5 +28,18 @@ namespace EmailToSms.Web.Controllers
             return View();
         }
 
+        //kullanıcıya veri girdirirken
+        [HttpPost]
+        public async Task<IActionResult> Create(EmailAccountCreateViewModel model)
+        {
+            //model doğrulanamamışsa
+            if(!ModelState.IsValid) return View(model);
+
+            var isSuccess = await _emailAccountService.AddAccountAsync(model);
+            if (isSuccess) return RedirectToAction("index");
+
+            ModelState.AddModelError(string.Empty, "Hesap eklenirken bir hata oluştu.");
+            return View(model);
+        }
     }
 }
