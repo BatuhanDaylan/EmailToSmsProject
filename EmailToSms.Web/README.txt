@@ -8,3 +8,5 @@ ViewModels içerisine LoginViewModel ve RegisterViewModel eklendi
 Views/Auth içerisine Login ve Register eklendi
 İki projenin portları düzenlendi
 Çıkan hatalar düzeltildi
+EmailAccountCreateViewModel eklendi
+EmailAccountVieWModel eklendi
