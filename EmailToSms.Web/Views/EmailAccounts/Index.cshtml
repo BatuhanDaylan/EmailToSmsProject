@@ -1,0 +1,57 @@
+﻿@model List<EmailToSms.Web.ViewModels.EmailAccountViewModel>
+@{
+    ViewData["Title"] = "E-Posta Hesaplarım";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>E-Posta Hesaplarım</h2>
+    <a asp-action="Create" class="btn btn-primary">Yeni Hesap Ekle</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>E-Posta Adresi</th>
+                            <th>Son Kontrol Edilme</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var account in Model)
+                        {
+                            <tr>
+                                <td>@account.Id</td>
+                                <td class="fw-bold">@account.EmailAddress</td>
+                                <td>@account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                                <td class="text-end">
+                                    <!-- Düzenle Butonu -->
+                                    <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-sm btn-warning">Düzenle</a>
+
+                                    <!-- Sil Butonu (POST isteği atması için form içinde) -->
+                                    <form asp-action="Delete" asp-route-id="@account.Id" method="post" class="d-inline" onsubmit="return confirm('Bu hesabı ve ona bağlı tüm kuralları silmek istediğinize emin misiniz?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                    </form>
+
+                                    <!-- Gelecek aşamada aktif edilecek kurallar butonu -->
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>Kurallar (Yakında)</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center" role="alert">
+                Henüz kayıtlı bir e-posta hesabınız bulunmuyor. Sağ üstteki butondan yeni hesap ekleyebilirsiniz.
+            </div>
+        }
+    </div>
+</div>

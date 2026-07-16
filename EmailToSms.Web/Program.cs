@@ -17,6 +17,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<TokenHandler>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<EmailAccountService>();
 
 // Named HttpClient; API base url appsettings.json içinden okunur
 builder.Services.AddHttpClient("ApiClient", client =>
@@ -33,6 +34,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+//hatayı bulmak için geçici
+app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

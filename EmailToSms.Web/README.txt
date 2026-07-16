@@ -19,3 +19,4 @@ EmailAccountController eklendi içerisine listeleme yapan method yazıldı
 EmailAccountController içerisine create methodu yazıldı
 EmailAccountController içerisine edit methodu yazıldı
 EmailAccountController içerisine delete methodu yazıldı
+Methodların Viewleri yazıldı EmailAccountController içerisinde hata düzeltmeleri yapıldı

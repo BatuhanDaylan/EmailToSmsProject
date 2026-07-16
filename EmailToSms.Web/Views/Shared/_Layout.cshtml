@@ -24,6 +24,9 @@
                     @if (isAuthenticated)
                     {
                         <li class="nav-item">
+                            <a class="nav-link text-white fw-bold" asp-controller="EmailAccounts" asp-action="Index">E-Postalarım</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Auth" asp-action="Logout">Çıkış Yap</a>
                         </li>
                     }

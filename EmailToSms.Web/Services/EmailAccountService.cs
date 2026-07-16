@@ -32,7 +32,7 @@ namespace EmailToSms.Web.Services
             var apiPayload = new
             {
                 EmailAddress = model.EmailAddress,
-                TentantId = model.TentantId,
+                TentantId = model.TenantId,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret
             };
@@ -49,7 +49,7 @@ namespace EmailToSms.Web.Services
             var apiPayload = new
             {
                 EmailAddress = model.EmailAddress,
-                TentantId = model.TentantId,
+                TentantId = model.TenantId,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret
             };

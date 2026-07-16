@@ -1,0 +1,55 @@
+﻿@model EmailToSms.Web.ViewModels.EmailAccountUpdateViewModel
+@{
+    ViewData["Title"] = "E-Posta Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0 fw-bold">E-Posta Hesabını Güncelle</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info small">
+                    <strong>Güvenlik Notu:</strong> Sistemde kayıtlı Microsoft uygulama şifreleriniz güvenlik sebebiyle gösterilmemektedir. Güncelleme yaparken bu bilgileri tekrar girmelisiniz.
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    <!-- ID bilgisini gizli bir şekilde POST işlemine taşıyoruz -->
+                    <input type="hidden" asp-for="Id" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmailAddress" class="form-label fw-bold">Okunacak E-Posta Adresi</label>
+                        <input asp-for="EmailAddress" class="form-control" />
+                        <span asp-validation-for="EmailAddress" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenantId" class="form-label fw-bold">Tenant ID</label>
+                        <input asp-for="TenantId" class="form-control" />
+                        <span asp-validation-for="TenantId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ClientId" class="form-label fw-bold">Client ID</label>
+                        <input asp-for="ClientId" class="form-control" />
+                        <span asp-validation-for="ClientId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ClientSecret" class="form-label fw-bold">Client Secret</label>
+                        <input asp-for="ClientSecret" class="form-control" type="password" />
+                        <span asp-validation-for="ClientSecret" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-warning fw-bold">Değişiklikleri Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
