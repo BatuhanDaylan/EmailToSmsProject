@@ -54,7 +54,14 @@ namespace EmailToSms.Web.Services
                 ClientSecret = model.ClientSecret
             };
             //eklenen verileri apiye gönderme
-            var response = await _httpClient.PostAsJsonAsync($"api/EmailAccounts/{id}", apiPayload);
+            var response = await _httpClient.PutAsJsonAsync($"api/EmailAccounts/{id}", apiPayload);
+            return response.IsSuccessStatusCode;
+        }
+
+        //veri silme
+        public async Task<bool> DeleteAccountAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"api/EmailAccounts/{id}");
             return response.IsSuccessStatusCode;
         }
 
