@@ -10,3 +10,4 @@ Views/Auth içerisine Login ve Register eklendi
 Çıkan hatalar düzeltildi
 EmailAccountCreateViewModel eklendi
 EmailAccountVieWModel eklendi
+EmailAccountUpdateViewModel eklendi
