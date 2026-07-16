@@ -2,8 +2,9 @@
 
 namespace EmailToSms.Web.ViewModels
 {
-    public class EmailAccountUpdateModel
+    public class EmailAccountUpdateViewModel
     {
+        public int Id { get; set; } 
         [Required(ErrorMessage = "E-posta adresi zorunludur.")]
         [EmailAddress(ErrorMessage = "Lütfen geçerli bir e-posta adresi giriniz.")]
         public string EmailAddress { get; set; } = string.Empty;
@@ -12,7 +13,6 @@ namespace EmailToSms.Web.ViewModels
         [Required(ErrorMessage = "ClientId zorunludur.")]
         public string ClientId { get; set; } = string.Empty;
         [Required(ErrorMessage = "ClientSecret zorunludur.")]
-
         public string ClientSecret { get; set; } = string.Empty;
     }
 }

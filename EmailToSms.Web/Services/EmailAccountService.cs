@@ -43,7 +43,7 @@ namespace EmailToSms.Web.Services
         }
 
         //veri düzenleyip apiye gönderme
-        public async Task<bool> UpdateAccountAsync(int id , EmailAccountUpdateModel model)
+        public async Task<bool> UpdateAccountAsync(int id , EmailAccountUpdateViewModel model)
         {
             //veri girişi
             var apiPayload = new

@@ -17,3 +17,4 @@ EmailAccountService içerisine güncellenen verileri apiye yollayacak method yaz
 EmailAccountService içerisine ver silen method yazıldı
 EmailAccountController eklendi içerisine listeleme yapan method yazıldı
 EmailAccountController içerisine create methodu yazıldı
+EmailAccountController içerisine edit methodu yazıldı

@@ -5,7 +5,7 @@ namespace EmailToSms.Web.ViewModels
     public class EmailAccountCreateViewModel
     {
         [Required(ErrorMessage = "E-posta adresi zorunludur.")]
-        [EmailAddress( ErrorMessage = "Lütfen geçerli bir e-posta adresi giriniz.")]
+        [EmailAddress(ErrorMessage = "Lütfen geçerli bir e-posta adresi giriniz.")]
         public string EmailAddress { get; set; } = string.Empty;
         [Required(ErrorMessage = "TentantId zorunludur.")]
         public string TentantId { get; set; } = string.Empty;
