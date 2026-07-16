@@ -2,7 +2,7 @@
 
 namespace EmailToSms.Web.ViewModels
 {
-    public class EmailAccountUpdateService
+    public class EmailAccountUpdateModel
     {
         [Required(ErrorMessage = "E-posta adresi zorunludur.")]
         [EmailAddress(ErrorMessage = "Lütfen geçerli bir e-posta adresi giriniz.")]

@@ -12,7 +12,7 @@ namespace EmailToSms.Web.Services
             _httpClient = httpClientFactory.CreateClient("ApiClient");
         }
 
-        //apiden veri çekme işlemi
+        //apiden veri çekme listeleme işlemi
         public async Task<List<EmailAccountViewModel>> GetAccountsAsync()
         {
             var response = await _httpClient.GetAsync("api/EmailAccounts");
@@ -25,6 +25,7 @@ namespace EmailToSms.Web.Services
             return new List<EmailAccountViewModel>();
         }
 
+        //girilen veriyi apiye gönderme
         public async Task<bool> AddAccountAsync (EmailAccountCreateViewModel model)
         {
             //veri girişi
@@ -38,6 +39,22 @@ namespace EmailToSms.Web.Services
 
             //eklenen verileri apiye gönderme
             var response = await _httpClient.PostAsJsonAsync("api/EmailAccounts", apiPayload);
+            return response.IsSuccessStatusCode;
+        }
+
+        //veri düzenleyip apiye gönderme
+        public async Task<bool> UpdateAccountAsync(int id , EmailAccountUpdateModel model)
+        {
+            //veri girişi
+            var apiPayload = new
+            {
+                EmailAddress = model.EmailAddress,
+                TentantId = model.TentantId,
+                ClientId = model.ClientId,
+                ClientSecret = model.ClientSecret
+            };
+            //eklenen verileri apiye gönderme
+            var response = await _httpClient.PostAsJsonAsync($"api/EmailAccounts/{id}", apiPayload);
             return response.IsSuccessStatusCode;
         }
 
