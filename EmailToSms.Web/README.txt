@@ -11,4 +11,5 @@ Views/Auth içerisine Login ve Register eklendi
 EmailAccountCreateViewModel eklendi
 EmailAccountVieWModel eklendi
 EmailAccountUpdateViewModel eklendi
-EmailAccountService eklendi içerisine apiden veri çekecek method yazıldı
+EmailAccountService eklendi içerisine apiden veri çekip listeleyecek method yazıldı
+EmailAccountService içerisine girilen verileri apiye yollayacak method yazıldı

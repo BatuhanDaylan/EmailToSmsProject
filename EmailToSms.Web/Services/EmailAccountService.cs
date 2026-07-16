@@ -1,4 +1,5 @@
 ﻿using EmailToSms.Web.ViewModels;
+using Microsoft.Graph.Models;
 
 namespace EmailToSms.Web.Services
 {
@@ -22,6 +23,22 @@ namespace EmailToSms.Web.Services
                 return await response.Content.ReadFromJsonAsync<List<EmailAccountViewModel>>() ?? new List<EmailAccountViewModel>();
             }
             return new List<EmailAccountViewModel>();
+        }
+
+        public async Task<bool> AddAccountAsync (EmailAccountCreateViewModel model)
+        {
+            //veri girişi
+            var apiPayload = new
+            {
+                EmailAddress = model.EmailAddress,
+                TentantId = model.TentantId,
+                ClientId = model.ClientId,
+                ClientSecret = model.ClientSecret
+            };
+
+            //eklenen verileri apiye gönderme
+            var response = await _httpClient.PostAsJsonAsync("api/EmailAccounts", apiPayload);
+            return response.IsSuccessStatusCode;
         }
 
     }
