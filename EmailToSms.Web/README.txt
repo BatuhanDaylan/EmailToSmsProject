@@ -31,3 +31,4 @@ ForwardingRulesController içerisine düzenleme methodu yazıldı
 ForwardingRulesController içerisine silme methodu yazıldı
 ForwardingRulesController içerisindeki methodlar için Index, Create ve Edit viewleri eklendi ve yazıldı
 Ortaya çıkan kural düzenledikten sonra kuralların gözükmemesi ve kural silme butonunun çalışmaması sorunları tespit edilip düzeltildi
+PhoneNumber işlemleri için DTO ları oluşturuldu
