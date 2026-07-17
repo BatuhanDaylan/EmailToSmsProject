@@ -24,3 +24,4 @@ ForwardingRule için ekleme güncelleme listeleme DTO ları yazıldı
 ForwardingRuleService eklendi içine kullanıcının arayüzde yaptığı kural işlemlerini paketleyip ağ üzerinden api tarafındaki kontrollera gönderen method yazıldı
 ForwardingRuleService içine formdan gelen kural verilerini apiye gönderen method yazıldı
 ForwardingRuleService içine formdan gelen kural güncelleme verilerini apiye gönderen method yazıldı
+ForwardingRuleService içine silinecek kuralı apiye dönderen method yazıldı

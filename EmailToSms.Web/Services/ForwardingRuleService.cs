@@ -38,5 +38,12 @@ namespace EmailToSms.Web.Services
             var response = await _httpClient.PutAsJsonAsync($"api/ForwardingRules/{id}", model);
             return response.IsSuccessStatusCode;
         }
+
+        //silinecek kuralı apiye gönderir
+        public async Task<bool> DeleteRuleAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"api/ForwardingRules{id}");
+            return response.IsSuccessStatusCode;
+        }
     }
 }
