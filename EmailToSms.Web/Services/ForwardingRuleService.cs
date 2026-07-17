@@ -30,5 +30,13 @@ namespace EmailToSms.Web.Services
             var response = await _httpClient.PostAsJsonAsync("api/ForwardingRules" , model);
             return response.IsSuccessStatusCode;
         }
+
+        //formdan gelen verileri id ye göre apiye gönderir
+        public async Task<bool> UpdateRuleAsync(int id , ForwardingRuleUpdateViewModel model)
+        {
+            //json formatına çevirip gönderir
+            var response = await _httpClient.PutAsJsonAsync($"api/ForwardingRules/{id}", model);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
