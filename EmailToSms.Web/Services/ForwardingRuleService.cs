@@ -1,0 +1,34 @@
+﻿using EmailToSms.Web.ViewModels;
+
+namespace EmailToSms.Web.Services
+{
+    //kullanıcının arayüzde yaptığı kural işlemlerini paketleyip ağ üzerinden api tarafındaki kontrollera gönderir
+    public class ForwardingRuleService
+    {
+        private readonly HttpClient _httpClient;
+        public ForwardingRuleService(IHttpClientFactory httpClientFactory)
+        {
+            _httpClient = httpClientFactory.CreateClient("ApiClient");
+        }
+
+        //dışarıdan e-posta Id si alır ve ona bağlı kuralları getirir
+        public async Task<List<ForwardingRuleViewModel>> GetRulesByAccountIdAsync(int emailAccountId)
+        {
+            var response = await _httpClient.GetAsync($"api/ForwardingRules/email/{emailAccountId}");
+            if (response.IsSuccessStatusCode)
+            {
+                //dışarıdan alınan JSON formatındaki veriyi Web katmanımızın anlayacağı ViewModel formatına çevirir
+                return await response.Content.ReadFromJsonAsync<List<ForwardingRuleViewModel>>() ?? new List<ForwardingRuleViewModel>();
+            }
+            return new List<ForwardingRuleViewModel>();
+        }
+
+        //formdan gelen kural verilerini apiye gönderir
+        public async Task<bool> AddRuleAsync(ForwardingRuleCreateViewModel model)
+        {
+            //json formatına çevirip yollar
+            var response = await _httpClient.PostAsJsonAsync("api/ForwardingRules" , model);
+            return response.IsSuccessStatusCode;
+        }
+    }
+}
