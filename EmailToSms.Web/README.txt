@@ -27,3 +27,5 @@ ForwardingRuleService içine formdan gelen kural güncelleme verilerini apiye g�
 ForwardingRuleService içine silinecek kuralı apiye dönderen method yazıldı
 ForwardingRulesController eklendi içerisine listeleme methodu yazıldı
 ForwardingRulesController içerisine ekleme methodu yazıldı
+ForwardingRulesController içerisine düzenleme methodu yazıldı
+ForwardingRulesController içerisine silme methodu yazıldı
