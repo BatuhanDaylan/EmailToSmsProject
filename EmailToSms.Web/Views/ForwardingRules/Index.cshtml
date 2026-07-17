@@ -1,0 +1,72 @@
+﻿@model List<EmailToSms.Web.ViewModels.ForwardingRuleViewModel>
+@{
+    ViewData["Title"] = "Filtre Kuralları";
+    // Controller'dan gönderdiğimiz e-posta hesap ID'sini yakalıyoruz
+    int currentAccountId = ViewBag.EmailAccountId;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Filtre Kuralları</h2>
+        <p class="text-muted">Bu hesaba gelen e-postalar aşağıdaki kurallara göre filtrelenecektir.</p>
+    </div>
+    <div>
+        <!-- E-Postalarım sayfasına geri dönme butonu -->
+        <a asp-controller="EmailAccounts" asp-action="Index" class="btn btn-outline-secondary me-2">E-Posta Listesine Dön</a>
+        <!-- Yeni Kural Ekle butonuna ID'yi gömüyoruz -->
+        <a asp-action="Create" asp-route-accountId="@currentAccountId" class="btn btn-primary">Yeni Kural Ekle</a>
+    </div>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <strong>Hata:</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Gönderen (İçeriyorsa)</th>
+                            <th>Konu (İçeriyorsa)</th>
+                            <th>İçerik (İçeriyorsa)</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rule in Model)
+                        {
+                            <tr>
+                                <td>@(string.IsNullOrEmpty(rule.SenderKeyword) ? "-" : rule.SenderKeyword)</td>
+                                <td>@(string.IsNullOrEmpty(rule.SubjectKeyword) ? "-" : rule.SubjectKeyword)</td>
+                                <td>@(string.IsNullOrEmpty(rule.BodyKeyword) ? "-" : rule.BodyKeyword)</td>
+                                <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@rule.Id" asp-route-accountId="@currentAccountId" class="btn btn-sm btn-warning">Düzenle</a>
+
+                                    <form asp-action="Delete" asp-route-id="@rule.Id" asp-route-accountId="@currentAccountId" method="post" class="d-inline" onsubmit="return confirm('Bu kuralı silmek istediğinize emin misiniz?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                    </form>
+
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>SMS Numaraları (Yakında)</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center" role="alert">
+                Bu hesaba ait henüz bir filtre kuralı oluşturulmamış. Sağ üstteki butondan yeni kural ekleyebilirsiniz.
+            </div>
+        }
+    </div>
+</div>

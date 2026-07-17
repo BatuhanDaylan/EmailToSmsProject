@@ -42,8 +42,19 @@ namespace EmailToSms.Web.Services
         //silinecek kuralı apiye gönderir
         public async Task<bool> DeleteRuleAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"api/ForwardingRules{id}");
-            return response.IsSuccessStatusCode;
+            var response = await _httpClient.DeleteAsync($"api/ForwardingRules/{id}");
+
+            //Eğer API işlemi onaylamazsa 
+            if (!response.IsSuccessStatusCode)
+            {
+                //API'nin gönderdiği arka plan hata detayını okuyoruz
+                var errorContent = await response.Content.ReadAsStringAsync();
+
+                //Hatayı Controller'a fırlatıyoruz ki ekrandaki kırmızı kutuya yazsın
+                throw new Exception($"Kod: {response.StatusCode} | Detay: {errorContent}");
+            }
+
+            return true;
         }
     }
 }

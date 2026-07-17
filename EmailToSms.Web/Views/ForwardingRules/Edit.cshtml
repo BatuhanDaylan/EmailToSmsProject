@@ -1,0 +1,42 @@
+﻿@model EmailToSms.Web.ViewModels.ForwardingRuleUpdateViewModel
+@{
+    ViewData["Title"] = "Kural Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-warning text-dark fw-bold">
+                <h4 class="mb-0">Kuralı Güncelle</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post">
+                    <!-- Kuralın ID'sini ve E-Posta Hesabının ID'sini formla birlikte taşıyoruz -->
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="EmailAccountId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="SenderKeyword" class="form-label fw-bold">Gönderen (İçeriyorsa)</label>
+                        <input asp-for="SenderKeyword" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SubjectKeyword" class="form-label fw-bold">Konu (İçeriyorsa)</label>
+                        <input asp-for="SubjectKeyword" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BodyKeyword" class="form-label fw-bold">E-Posta İçeriği (İçeriyorsa)</label>
+                        <input asp-for="BodyKeyword" class="form-control" />
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" asp-route-accountId="@Model.EmailAccountId" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-warning fw-bold">Değişiklikleri Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

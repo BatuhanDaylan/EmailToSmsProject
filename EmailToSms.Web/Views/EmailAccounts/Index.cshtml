@@ -39,7 +39,7 @@
                                     </form>
 
                                     <!-- Gelecek aşamada aktif edilecek kurallar butonu -->
-                                    <button class="btn btn-sm btn-outline-secondary" disabled>Kurallar (Yakında)</button>
+                                    <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@account.Id" class="btn btn-sm btn-info text-white">Kurallar</a>
                                 </td>
                             </tr>
                         }

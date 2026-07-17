@@ -1,0 +1,45 @@
+﻿@model EmailToSms.Web.ViewModels.ForwardingRuleCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Kural Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Yeni Filtre Kuralı Ekle</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-light small border">
+                    <strong>Bilgi:</strong> Filtrelemek istediğiniz alanları doldurun. Boş bıraktığınız alanlar o kriter için kontrol edilmeyecektir.
+                </div>
+
+                <form asp-action="Create" method="post">
+                    <!-- Hangi e-posta hesabına kural eklediğimizi arka planda gizlice taşıyoruz -->
+                    <input type="hidden" asp-for="EmailAccountId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="SenderKeyword" class="form-label fw-bold">Gönderen (İçeriyorsa)</label>
+                        <input asp-for="SenderKeyword" class="form-control" placeholder="Örn: muhasebe@sirket.com veya isyeri@banka.com" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SubjectKeyword" class="form-label fw-bold">Konu (İçeriyorsa)</label>
+                        <input asp-for="SubjectKeyword" class="form-control" placeholder="Örn: Fatura, Acil, Sistem Uyarısı" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BodyKeyword" class="form-label fw-bold">E-Posta İçeriği (İçeriyorsa)</label>
+                        <input asp-for="BodyKeyword" class="form-control" placeholder="Örn: sunucu kapandı, onay kodu" />
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" asp-route-accountId="@Model.EmailAccountId" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-success">Kuralı Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

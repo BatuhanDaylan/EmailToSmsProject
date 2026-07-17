@@ -21,7 +21,7 @@ namespace EmailToSms.Web.Controllers
             {
                 var rules = await _ruleService.GetRulesByAccountIdAsync(accountId);
                 ViewBag.EmailAccountId = accountId;
-                return Ok(rules);
+                return View(rules);
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace EmailToSms.Web.Controllers
                 var model = new ForwardingRuleUpdateViewModel
                 {
                     Id = rule.Id,
-                    EmailAccountId = rule.EmailAccountId,
+                    EmailAccountId = accountId,
                     SenderKeyword = rule.SenderKeyword,
                     SubjectKeyword = rule.SubjectKeyword,
                     BodyKeyword = rule.BodyKeyword,
@@ -113,17 +113,29 @@ namespace EmailToSms.Web.Controllers
         }
 
         //kullanıcı kural silerken
-        [HttpDelete]
-        public async Task<IActionResult> Delete(int id , int accountId)
+        // 6. KURAL SİLME (POST)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id, int accountId)
         {
             try
             {
-                await _ruleService.DeleteRuleAsync(id);
+                var isSuccess = await _ruleService.DeleteRuleAsync(id);
+
+                //Eğer API silemedim derse (Örn: Veritabanında bir engel varsa)
+                if (!isSuccess)
+                {
+                    //Hatayı TempData'ya yüklüyoruz ki HTML sayfamız bunu okuyabilsin
+                    TempData["ErrorMessage"] = "API işlemi reddetti: Kural silinemedi.";
+                }
+
+                //İşlem başarılı da olsa, başarısız da olsa Kendi listeleme sayfamıza dönüyoruz
+                //Artık asla siyah ekranda kalmayacağız
                 return RedirectToAction("Index", new { accountId = accountId });
             }
             catch (Exception ex)
             {
-                return Content($"SİLME HATASI: {ex.Message}");
+                TempData["ErrorMessage"] = $"SİSTEM HATASI: {ex.Message}";
+                return RedirectToAction("Index", new { accountId = accountId });
             }
         }
     }
