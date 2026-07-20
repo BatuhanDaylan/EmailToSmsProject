@@ -48,17 +48,16 @@ namespace EmailToSms.Api.Services
             try
             {
                 //graph apinin anlayabilmesi için tarihi ISO 8601 formatında alıp tek tırnak içine sarıyoruz
-                var lastCheckedIso = account.LastChecketAt.ToString("o");
-                var lastCheckedQuoted = $"'{lastCheckedIso}'";
+                // Tarihi alıyoruz (Microsoft Graph tarihi tırnaksız bekler)
+                // Utc zaman diliminde olduğundan emin olmak için evrensel formata (Z) çeviriyoruz
+                var lastCheckedIso = account.LastChecketAt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
 
-                //En üstteki 10 okunmamış maili alırız 
-                //Geliş tarihi son kontrol edilenden sonra ise maili alırız
-                //En eski meilden yeni maile göre sıralarız
                 var messages = await graphClient.Users[account.EmailAddress].Messages
                     .GetAsync(config =>
                     {
                         config.QueryParameters.Top = 10;
-                        config.QueryParameters.Filter = $"isRead eq false and receivedDateTime ge {lastCheckedQuoted}";
+                        // lastCheckedIso değerini tek tırnak OLMADAN doğrudan ekliyoruz
+                        config.QueryParameters.Filter = $"isRead eq false and receivedDateTime ge {lastCheckedIso}";
                         config.QueryParameters.Orderby = new[] { "receivedDateTime asc" };
                     });
 

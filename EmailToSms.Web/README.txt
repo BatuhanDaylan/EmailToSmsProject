@@ -39,4 +39,6 @@ PhoneNumbersController içerisine listeleme methodu yazıldı
 PhoneNumbersController içerisine ekleme methodu yazıldı
 PhoneNumbersController içerisine düzenleme methodu yazıldı
 PhoneNumbersController içerisine silme methodu yazıldı
+Silme butonundaki hata düzeltmeleri yapıldı
+Projeti test etmek için Microsoft işyeri hesabı açıldı TentantId ClientId ClientSecret alındı ve uygulama arayüzünde başarıyla bağlandı daha sonra mail gönrerilerek denendi mesaj konsola yazdırıldı
 
