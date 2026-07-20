@@ -19,6 +19,7 @@ builder.Services.AddTransient<TokenHandler>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailAccountService>();
 builder.Services.AddScoped<ForwardingRuleService>();
+builder.Services.AddScoped<PhoneNumberService>();
 
 // Named HttpClient; API base url appsettings.json içinden okunur
 builder.Services.AddHttpClient("ApiClient", client =>

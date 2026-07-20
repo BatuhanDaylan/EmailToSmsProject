@@ -113,7 +113,6 @@ namespace EmailToSms.Web.Controllers
         }
 
         //kullanıcı kural silerken
-        // 6. KURAL SİLME (POST)
         [HttpPost]
         public async Task<IActionResult> Delete(int id, int accountId)
         {
@@ -129,7 +128,6 @@ namespace EmailToSms.Web.Controllers
                 }
 
                 //İşlem başarılı da olsa, başarısız da olsa Kendi listeleme sayfamıza dönüyoruz
-                //Artık asla siyah ekranda kalmayacağız
                 return RedirectToAction("Index", new { accountId = accountId });
             }
             catch (Exception ex)
