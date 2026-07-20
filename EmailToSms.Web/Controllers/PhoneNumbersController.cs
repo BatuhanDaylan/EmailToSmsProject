@@ -144,8 +144,7 @@ namespace EmailToSms.Web.Controllers
             }
             catch (Exception ex)
             {
-                //Silme başarısız olursa siyah ekran yerine kendi sayfamızda kırmızı kutu gösteriyoruz
-                TempData["ErrorMessage"] = $"API SİLME İŞLEMİNİ REDDETTİ: {ex.Message}";
+                TempData["ErrorMessage"] = $"Hata Detayı: {ex.Message}";
                 return RedirectToAction("Index", new { ruleId = ruleId, accountId = accountId });
             }
         }

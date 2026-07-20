@@ -54,7 +54,7 @@
                                         <button type="submit" class="btn btn-sm btn-danger">Sil</button>
                                     </form>
 
-                                    <button class="btn btn-sm btn-outline-secondary" disabled>SMS Numaraları (Yakında)</button>
+                                    <a asp-controller="PhoneNumbers" asp-action="Index" asp-route-ruleId="@rule.Id" asp-route-accountId="@currentAccountId" class="btn btn-sm btn-success">SMS Numaraları</a>
                                 </td>
                             </tr>
                         }

@@ -32,17 +32,24 @@ namespace EmailToSms.Web.Services
         }
 
         //formdan gelen verileri idye göre apiye gönderir
-        public async Task<bool> UpdatePhoneNumberAsync(int id , PhoneNumberUpdateViewModel model)
+        public async Task<bool> UpdatePhoneNumberAsync(int id, PhoneNumberUpdateViewModel model)
         {
-            //json formatına çağırıp gönderir
-            var response = await _httpClient.PutAsJsonAsync($"api/PhoneNumbers/{id}", model);
-            return response.IsSuccessStatusCode;
+            var response = await _httpClient.PostAsJsonAsync($"api/PhoneNumbers/{id}", model);
+
+            // Eğer API güncellemeyi reddederse (200 OK dönmezse) hatayı yakala ve fırlat:
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Kod: {response.StatusCode} | Detay: {error}");
+            }
+
+            return true;
         }
 
         //silinecek kuralı apiye yolla
         public async Task<bool > DeletePhoneNumberAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"api/PhoneNumbers{id}");
+            var response = await _httpClient.DeleteAsync($"api/PhoneNumbers/{id}");
 
             //Eğer API işlemi onaylamazsa 
             if (!response.IsSuccessStatusCode)
