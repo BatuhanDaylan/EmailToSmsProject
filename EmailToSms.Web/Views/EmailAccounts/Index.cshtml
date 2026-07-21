@@ -4,42 +4,61 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>E-Posta Hesaplarım</h2>
-    <a asp-action="Create" class="btn btn-primary">Yeni Hesap Ekle</a>
+    <div>
+        <h3 class="text-secondary fw-bold mb-0"><i class="fas fa-inbox me-2 text-primary"></i>Dinlenen Hesaplar</h3>
+        <p class="text-muted mb-0 small">Sisteme entegre edilmiş Microsoft 365 hesaplarını yönetin.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
+        <i class="fas fa-plus me-2"></i>Yeni Hesap Bağla
+    </a>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
+<div class="card stat-card border-0 shadow-sm">
+    <div class="card-body p-0">
         @if (Model != null && Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle mt-3">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted">
                         <tr>
-                            <th>ID</th>
+                            <th class="ps-4">ID</th>
                             <th>E-Posta Adresi</th>
-                            <th>Son Kontrol Edilme</th>
-                            <th class="text-end">İşlemler</th>
+                            <th>Son Kontrol (Senkronizasyon)</th>
+                            <th class="text-end pe-4">İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var account in Model)
                         {
                             <tr>
-                                <td>@account.Id</td>
-                                <td class="fw-bold">@account.EmailAddress</td>
-                                <td>@account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-                                <td class="text-end">
+                                <td class="ps-4 text-muted fw-bold">#@account.Id</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border px-3 py-2 fs-6">
+                                        <i class="fas fa-at me-1"></i> @account.EmailAddress
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted fw-bold">
+                                        <i class="far fa-clock me-1 text-warning"></i> @account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                    </small>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <!-- Kurallar Butonu -->
+                                    <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@account.Id" class="btn btn-sm btn-info text-white shadow-sm me-1" title="Kural Motoru">
+                                        <i class="fas fa-filter"></i> Kurallar
+                                    </a>
+
                                     <!-- Düzenle Butonu -->
-                                    <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                                    <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-sm btn-warning shadow-sm me-1" title="Düzenle">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
 
-                                    <!-- Sil Butonu (POST isteği atması için form içinde) -->
-                                    <form asp-action="Delete" asp-route-id="@account.Id" method="post" class="d-inline" onsubmit="return confirm('Bu hesabı ve ona bağlı tüm kuralları silmek istediğinize emin misiniz?');">
-                                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                    <!-- Sil Butonu (SweetAlert Entegreli Form) -->
+                                    <form asp-action="Delete" asp-route-id="@account.Id" method="post" class="d-inline delete-form">
+                                        <button type="button" class="btn btn-sm btn-danger shadow-sm btn-delete" title="Sil">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </form>
-
-                                    <!-- Gelecek aşamada aktif edilecek kurallar butonu -->
-                                    <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@account.Id" class="btn btn-sm btn-info text-white">Kurallar</a>
                                 </td>
                             </tr>
                         }
@@ -49,9 +68,40 @@
         }
         else
         {
-            <div class="alert alert-info text-center" role="alert">
-                Henüz kayıtlı bir e-posta hesabınız bulunmuyor. Sağ üstteki butondan yeni hesap ekleyebilirsiniz.
+            <div class="text-center py-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-envelope-open-text fs-1 text-muted"></i>
+                </div>
+                <h5 class="text-secondary fw-bold">Henüz Hesap Eklenmemiş</h5>
+                <p class="text-muted">Sistemin e-postaları okuyabilmesi için yeni bir Microsoft hesabı tanımlayın.</p>
+                <a asp-action="Create" class="btn btn-outline-primary mt-2">İlk Hesabı Oluştur</a>
             </div>
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+
+                Swal.fire({
+                    title: 'Hesap Silinecek!',
+                    text: "Bu hesabı ve ona bağlı olan tüm filtre kurallarını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-trash me-1"></i> Evet, Sil!',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Onaylanırsa formu gönder
+                    }
+                });
+            });
+        });
+    </script>
+}

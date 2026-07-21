@@ -14,6 +14,7 @@ namespace EmailToSms.Api.Data
         public DbSet<EmailAccount> EmailAccounts { get; set; }
         public DbSet<ForwardingRule> ForwardingRules { get; set; }
         public DbSet<RulePhoneNumber> RulePhoneNumbers { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,13 @@ namespace EmailToSms.Api.Data
                 .WithMany(r => r.TargetPhoneNumbers)
                 .HasForeignKey(p => p.ForwardingRuleId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            //bir kural silinirse logdaki id değerini null  yap
+            modelBuilder.Entity<AuditLog>()
+                .HasOne<ForwardingRule>()
+                .WithMany()
+                .HasForeignKey(a => a.ForwardingRuleId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -65,5 +65,14 @@ namespace EmailToSms.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<DashboardStatsViewModel> GetStatsAsync()
+        {
+            var response = await _httpClient.GetAsync("api/Stats");
+            if (!response.IsSuccessStatusCode)
+            {
+                return new DashboardStatsViewModel(); // 0'larla dön
+            }
+            return await response.Content.ReadFromJsonAsync<DashboardStatsViewModel>() ?? new DashboardStatsViewModel();
+        }
     }
 }

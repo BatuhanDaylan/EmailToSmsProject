@@ -1,8 +1,137 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Genel Bakış";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h3 class="text-secondary fw-bold mb-1">Hoş Geldiniz, Yönetici!</h3>
+        <p class="text-muted mb-0 small">EmailToSms sisteminin genel durumunu ve entegrasyon özetini buradan takip edebilirsiniz.</p>
+    </div>
+    <div>
+        <a asp-controller="EmailAccounts" asp-action="Create" class="btn btn-primary shadow-sm fw-bold px-4">
+            <i class="fas fa-plus me-2"></i>Hızlı Hesap Ekle
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- İstatistik Kartı 1 -->
+    <div class="col-md-4">
+        <div class="card stat-card bg-white p-4 h-100 border-top border-primary border-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <p class="text-muted mb-1 fw-bold text-uppercase small">Bağlı Hesaplar</p>
+                    <h2 class="mb-0 text-dark fw-bolder">@ViewBag.AccountCount</h2>
+                </div>
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                    <i class="fas fa-envelope text-primary fs-4"></i>
+                </div>
+            </div>
+            <div class="text-muted small border-top pt-3">
+                Aktif durumda ve dinleniyor.
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartı 2 -->
+    <div class="col-md-4">
+        <div class="card stat-card bg-white p-4 h-100 border-top border-info border-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <p class="text-muted mb-1 fw-bold text-uppercase small">Tanımlı Kurallar</p>
+                    <h2 class="mb-0 text-dark fw-bolder">@ViewBag.RuleCount</h2>
+                </div>
+                <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                    <i class="fas fa-filter text-info fs-4"></i>
+                </div>
+            </div>
+            <div class="text-muted small border-top pt-3">
+                Gelen kutularında tetiklenmeyi bekliyor.
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartı 3 -->
+    <div class="col-md-4">
+        <div class="card stat-card bg-white p-4 h-100 border-top border-success border-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <p class="text-muted mb-1 fw-bold text-uppercase small">Başarılı SMS</p>
+                    <h2 class="mb-0 text-dark fw-bolder">@ViewBag.SmsCount</h2>
+                </div>
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                    <i class="fas fa-sms text-success fs-4"></i>
+                </div>
+            </div>
+            <div class="text-muted small border-top pt-3">
+                Bugün hedeflere ulaştırıldı.
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    var recentLogs = ViewBag.RecentLogs as List<EmailToSms.Web.ViewModels.AuditLogViewModel>;
+}
+
+<div class="card border-0 shadow-sm stat-card mt-4">
+    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-bolt me-2 text-warning"></i>Sistem İşlem Logları</h5>
+        <button class="btn btn-sm btn-light border shadow-sm text-muted fw-bold" onclick="location.reload()"><i class="fas fa-sync-alt me-1"></i> Yenile</button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-muted small">
+                    <tr>
+                        <th class="ps-4 py-3">Tarih / Saat (UTC)</th>
+                        <th>Olay Tipi</th>
+                        <th>Detay Açıklama</th>
+                        <th class="text-end pe-4">Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (recentLogs != null && recentLogs.Any())
+                    {
+                        foreach (var log in recentLogs)
+                        {
+                            <tr>
+                                <td class="ps-4 text-muted fw-bold">
+                                    <i class="far fa-clock me-1 text-secondary"></i> @log.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")
+                                </td>
+                                <td>
+                                    <span class="badge @(log.IsSuccess ? "bg-success bg-opacity-10 text-success border border-success" : "bg-danger bg-opacity-10 text-danger border border-danger") px-2 py-1">
+                                        @log.EventType
+                                    </span>
+                                </td>
+                                <td class="small text-dark">@log.Details</td>
+                                <td class="text-end pe-4">
+                                    @if (log.IsSuccess)
+                                    {
+                                        <i class="fas fa-check-circle text-success fs-5" title="Başarılı"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-exclamation-circle text-danger fs-5" title="Hata / Başarısız"></i>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-info-circle fs-3 mb-2"></i><br />
+                                Henüz kayıtlı bir işlem logu bulunmuyor. Worker çalıştıkça loglar buraya düşecektir.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-light text-center py-3 border-top-0">
+        <a asp-controller="Logs" asp-action="Index" class="text-decoration-none fw-bold small text-primary"> Tüm İşlem Loglarını Görüntüle <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
 </div>

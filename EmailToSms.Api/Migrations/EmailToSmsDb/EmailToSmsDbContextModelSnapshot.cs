@@ -22,6 +22,48 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("EmailToSms.Api.Models.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("EmailAccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ForwardingRuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ForwardingRuleId1")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsSuccess")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailAccountId");
+
+                    b.HasIndex("ForwardingRuleId");
+
+                    b.HasIndex("ForwardingRuleId1");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("EmailToSms.Api.Models.EmailAccount", b =>
                 {
                     b.Property<int>("Id")
@@ -105,6 +147,26 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
                     b.HasIndex("ForwardingRuleId");
 
                     b.ToTable("RulePhoneNumbers");
+                });
+
+            modelBuilder.Entity("EmailToSms.Api.Models.AuditLog", b =>
+                {
+                    b.HasOne("EmailToSms.Api.Models.EmailAccount", "EmailAccount")
+                        .WithMany()
+                        .HasForeignKey("EmailAccountId");
+
+                    b.HasOne("EmailToSms.Api.Models.ForwardingRule", null)
+                        .WithMany()
+                        .HasForeignKey("ForwardingRuleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("EmailToSms.Api.Models.ForwardingRule", "ForwardingRule")
+                        .WithMany()
+                        .HasForeignKey("ForwardingRuleId1");
+
+                    b.Navigation("EmailAccount");
+
+                    b.Navigation("ForwardingRule");
                 });
 
             modelBuilder.Entity("EmailToSms.Api.Models.ForwardingRule", b =>

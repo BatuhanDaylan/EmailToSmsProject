@@ -36,6 +36,7 @@ builder.Services.AddIdentity<EmailToSmsUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<ISmsService, SmsService>();
+builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<IMicrosoftGraphEmailReader, MicrosoftGraphEmailReader>();
 
 builder.Services.AddHostedService<EmailCheckerWorker>();

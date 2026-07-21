@@ -41,4 +41,9 @@ PhoneNumbersController içerisine düzenleme methodu yazıldı
 PhoneNumbersController içerisine silme methodu yazıldı
 Silme butonundaki hata düzeltmeleri yapıldı
 Projeti test etmek için Microsoft işyeri hesabı açıldı TentantId ClientId ClientSecret alındı ve uygulama arayüzünde başarıyla bağlandı daha sonra mail gönrerilerek denendi mesaj konsola yazdırıldı
+Arayüzler profesyonelce yenilendi
+Girilen mail sayısını kural sayısını ve şu ana kadar yollanan mesaj sayısını ana ekranda gösteren arayüz eklendi
+Log kayıtlarını mesaj olarak ekrana vermek için arayüz veritabanında tutmak için model eklendi
+Arayüzlerdeki ve api kısmındaki hatalar düzeltildi yeniden yazıldı
+
 

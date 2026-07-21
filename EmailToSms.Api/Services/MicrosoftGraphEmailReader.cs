@@ -2,17 +2,22 @@
 using Microsoft.Graph;
 using EmailToSms.Api.Models;
 using Microsoft.Graph.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace EmailToSms.Api.Services
 {
     public class MicrosoftGraphEmailReader : IMicrosoftGraphEmailReader
     {
         private readonly ISmsService _smsService;
-        public MicrosoftGraphEmailReader(ISmsService smsService)
+        private readonly AuditLogService _auditLogService; // YENİ: Log servisini tanımladık
+
+        // YENİ: Log servisini Constructor'a ekledik
+        public MicrosoftGraphEmailReader(ISmsService smsService, AuditLogService auditLogService)
         {
             _smsService = smsService;
+            _auditLogService = auditLogService;
         }
-
 
         //Yazdığımız bu method sayesinde email mesajlarının göndericisi, konusu ve içeriği ile ilgili kuralları kontrol ediyoruz
         public bool CheckIfEmailRuleMatches(Message emailMessage, ForwardingRule rule)
@@ -81,7 +86,30 @@ namespace EmailToSms.Api.Services
 
                             foreach (var targetPhoneNumber in rule.TargetPhoneNumbers)
                             {
-                                await _smsService.SendSmsAsync(targetPhoneNumber.PhoneNumber, smsText);
+                                try
+                                {
+                                    await _smsService.SendSmsAsync(targetPhoneNumber.PhoneNumber, smsText);
+
+                                    // YENİ: Başarılı SMS gönderimini veritabanına logluyoruz
+                                    await _auditLogService.LogAsync(
+                                        eventType: "SmsSent",
+                                        details: $"{targetPhoneNumber.PhoneNumber} numarasına SMS iletildi. Sebep : gönderici '{rule.SenderKeyword}' , konu '{rule.SubjectKeyword}' , içerik '{rule.BodyKeyword}' kuralı tetiklendi.",
+                                        isSuccess: true,
+                                        accountId: account.Id,
+                                        ruleId: rule.Id
+                                    );
+                                }
+                                catch (Exception smsEx)
+                                {
+                                    // YENİ: Başarısız SMS gönderimini logluyoruz (Böylece sistem çökmüyor, diğer numaralara devam ediyor)
+                                    await _auditLogService.LogAsync(
+                                        eventType: "SmsFailed",
+                                        details: $"{targetPhoneNumber.PhoneNumber} numarasına SMS gönderilemedi! Hata: {smsEx.Message}",
+                                        isSuccess: false,
+                                        accountId: account.Id,
+                                        ruleId: rule.Id
+                                    );
+                                }
                             }
                         }
                     }
@@ -105,6 +133,14 @@ namespace EmailToSms.Api.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Email okunurken hata oluştu: {ex.Message}");
+
+                // YENİ: Graph API'ye bağlanırken veya mailleri çekerken oluşan kritik hataları logluyoruz
+                await _auditLogService.LogAsync(
+                    eventType: "GraphApiError",
+                    details: $"Graph API'den {account.EmailAddress} mailleri okunurken hata: {ex.Message}",
+                    isSuccess: false,
+                    accountId: account.Id
+                );
             }
         }
     }

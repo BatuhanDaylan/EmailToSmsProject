@@ -1,49 +1,63 @@
 ﻿@model EmailToSms.Web.ViewModels.EmailAccountCreateViewModel
 @{
-    ViewData["Title"] = "Yeni E-Posta Ekle";
+    ViewData["Title"] = "Yeni E-Posta Bağla";
 }
 
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm mt-4">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Yeni E-Posta Hesabı Bağla</h4>
+    <div class="col-lg-8">
+        <div class="card stat-card border-0 shadow-sm mt-3">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-link me-2"></i>Microsoft 365 Entegrasyonu</h5>
             </div>
-            <div class="card-body p-4">
-                <div class="alert alert-warning small">
-                    <strong>Not:</strong> Bu işlemin gerçekleşmesi için Microsoft 365 Azure portalından aldığınız Tenant ID, Client ID ve Client Secret bilgilerini eksiksiz girmeniz gerekmektedir.
+            <div class="card-body p-4 p-md-5">
+                <div class="alert alert-primary bg-primary bg-opacity-10 border-0 mb-4 d-flex align-items-center" role="alert">
+                    <i class="fas fa-info-circle fs-4 text-primary me-3"></i>
+                    <div class="small text-secondary">
+                        <strong>Bilgi:</strong> API okumalarının sorunsuz çalışması için Azure portalındaki <strong>Tenant ID, Client ID ve Secret</strong> değerlerini boşluk bırakmadan kopyaladığınızdan emin olun.
+                    </div>
                 </div>
 
                 <form asp-action="Create" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small mb-4"></div>
 
-                    <div class="mb-3">
-                        <label asp-for="EmailAddress" class="form-label fw-bold">Okunacak E-Posta Adresi</label>
-                        <input asp-for="EmailAddress" class="form-control" placeholder="ornek@sirket.com" />
-                        <span asp-validation-for="EmailAddress" class="text-danger small"></span>
+                    <div class="mb-4">
+                        <label asp-for="EmailAddress" class="form-label fw-bold text-secondary">Hedef E-Posta Adresi</label>
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-envelope"></i></span>
+                            <input asp-for="EmailAddress" class="form-control border-start-0 ps-0" placeholder="ornek@sirket.onmicrosoft.com" />
+                        </div>
+                        <span asp-validation-for="EmailAddress" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="TenantId" class="form-label fw-bold">Tenant ID (Dizin Kimliği)</label>
-                        <input asp-for="TenantId" class="form-control" />
-                        <span asp-validation-for="TenantId" class="text-danger small"></span>
+                    <div class="mb-4">
+                        <label asp-for="TenantId" class="form-label fw-bold text-secondary">Tenant ID (Dizin Kimliği)</label>
+                        <input asp-for="TenantId" class="form-control form-control-lg font-monospace text-muted shadow-sm" placeholder="Örn: 8a5b...-..." />
+                        <span asp-validation-for="TenantId" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ClientId" class="form-label fw-bold">Client ID (Uygulama Kimliği)</label>
-                        <input asp-for="ClientId" class="form-control" />
-                        <span asp-validation-for="ClientId" class="text-danger small"></span>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="ClientId" class="form-label fw-bold text-secondary">Client ID (Uygulama)</label>
+                            <input asp-for="ClientId" class="form-control form-control-lg font-monospace text-muted shadow-sm" />
+                            <span asp-validation-for="ClientId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ClientSecret" class="form-label fw-bold text-secondary">Client Secret</label>
+                            <div class="input-group input-group-lg shadow-sm">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-key text-warning"></i></span>
+                                <input asp-for="ClientSecret" class="form-control border-start-0 ps-0 font-monospace" type="password" placeholder="Gizli değer..." />
+                            </div>
+                            <span asp-validation-for="ClientSecret" class="text-danger small mt-1 d-block"></span>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ClientSecret" class="form-label fw-bold">Client Secret (İstemci Gizli Anahtarı)</label>
-                        <input asp-for="ClientSecret" class="form-control" type="password" />
-                        <span asp-validation-for="ClientSecret" class="text-danger small"></span>
-                    </div>
+                    <hr class="text-muted my-4" />
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a asp-action="Index" class="btn btn-outline-secondary">İptal ve Geri Dön</a>
-                        <button type="submit" class="btn btn-success">Sisteme Bağla ve Kaydet</button>
+                    <div class="d-flex justify-content-end gap-3">
+                        <a asp-action="Index" class="btn btn-light px-4 shadow-sm fw-bold text-muted">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm fw-bold">
+                            <i class="fas fa-save me-2"></i>Sisteme Kaydet
+                        </button>
                     </div>
                 </form>
             </div>

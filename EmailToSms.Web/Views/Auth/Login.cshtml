@@ -1,44 +1,111 @@
-﻿@model LoginViewModel
+﻿@model EmailToSms.Web.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Giriş Yap";
+    Layout = null; // Sol menülü ana Layout'u kullanmasın
+    ViewData["Title"] = "Sisteme Giriş";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm mt-5">
-            <div class="card-body p-4">
-                <h3 class="text-center mb-4">Giriş Yap</h3>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş Yap - EmailToSms</title>
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+            body {
+                background-color: #f8fafc;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-                <!-- asp-action="Login" ile formu AuthController'daki POST Login metoduna yönlendiriyoruz -->
-                <form asp-action="Login" method="post">
+            .auth-card {
+                border-radius: 15px;
+                border: none;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+                overflow: hidden;
+            }
 
-                    <!-- Genel form hatalarını (örneğin "E-posta veya şifre hatalı") burada gösteriyoruz -->
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            .brand-icon {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                margin: 0 auto 20px;
+            }
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">E-Posta Adresi</label>
-                        <!-- asp-for sayesinde input'un name, id ve type özellikleri ViewModel'den otomatik okunur -->
-                        <input asp-for="Email" class="form-control" placeholder="ornek@mail.com" />
-                        <!-- ViewModel'deki [Required] veya [EmailAddress] hataları bu span içinde kırmızı renkte çıkar -->
-                        <span asp-validation-for="Email" class="text-danger small"></span>
+            .form-control:focus {
+                box-shadow: none;
+                border-color: #3b82f6;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card auth-card bg-white">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="brand-icon shadow-sm">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-1">EmailToSms</h4>
+                            <p class="text-muted small">Yönetim Paneline Giriş Yapın</p>
+                        </div>
+
+                        <form asp-action="Login" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small py-2 mb-3 rounded-3 text-center"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label fw-bold text-secondary small">E-Posta Adresi</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
+                                    <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="admin@sirket.com" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label asp-for="Password" class="form-label fw-bold text-secondary small mb-0">Şifre</label>
+                                    <a href="#" class="text-decoration-none small text-primary">Şifremi Unuttum</a>
+                                </div>
+                                <div class="input-group shadow-sm mt-2">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                                    <input asp-for="Password" class="form-control border-start-0 ps-0" placeholder="••••••••" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-3 border-top pt-3">
+                            <span class="text-muted small">Sistemde hesabınız yok mu?</span><br />
+                            <a asp-action="Register" class="text-decoration-none fw-bold text-primary">Hemen Kayıt Olun</a>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label">Şifre</label>
-                        <!-- ViewModel'de [DataType(DataType.Password)] yazdığımız için bu alan otomatik type="password" olur -->
-                        <input asp-for="Password" class="form-control" placeholder="••••••••" />
-                        <span asp-validation-for="Password" class="text-danger small"></span>
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Giriş Yap</button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-3">
-                    <a asp-action="Register" class="text-decoration-none">Hesabın yok mu? Hemen kayıt ol.</a>
+                </div>
+                <div class="text-center mt-4 text-muted small">
+                    &copy; @DateTime.Now.Year EmailToSms Altyapısı
                 </div>
             </div>
         </div>
     </div>
-</div>
+</body>
+</html>

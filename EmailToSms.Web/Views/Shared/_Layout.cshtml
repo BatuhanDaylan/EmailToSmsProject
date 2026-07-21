@@ -1,53 +1,142 @@
-﻿@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EmailToSms</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f6f9;
+                overflow-x: hidden;
+            }
+
+            .sidebar {
+                min-height: 100vh;
+                background-color: #1e293b;
+                width: 260px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+            }
+
+            .sidebar-brand {
+                color: #f8fafc;
+                font-weight: 700;
+                font-size: 1.4rem;
+                letter-spacing: 1px;
+                display: block;
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid #334155;
+                text-decoration: none;
+            }
+
+            .sidebar a.nav-link {
+                color: #cbd5e1;
+                text-decoration: none;
+                padding: 15px 20px;
+                display: block;
+                border-left: 4px solid transparent;
+                transition: 0.2s;
+                font-weight: 500;
+            }
+
+                .sidebar a.nav-link:hover, .sidebar a.nav-link.active {
+                    background-color: #334155;
+                    border-left: 4px solid #3b82f6;
+                    color: #ffffff;
+                }
+
+            .main-content {
+                margin-left: 260px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .navbar {
+                box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            }
+
+            .stat-card {
+                border-radius: 10px;
+                border: none;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+                .stat-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+                }
+    </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">EmailToSms</a>
-
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    @{
-                        var token = HttpContextAccessor.HttpContext?.Session.GetString("ApiJwt");
-                        bool isAuthenticated = !string.IsNullOrEmpty(token);
-                    }
-
-                    @if (isAuthenticated)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-white fw-bold" asp-controller="EmailAccounts" asp-action="Index">E-Postalarım</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Auth" asp-action="Logout">Çıkış Yap</a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Auth" asp-action="Login">Giriş Yap</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Auth" asp-action="Register">Kayıt Ol</a>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+<body>
+    <div class="sidebar shadow-lg">
+        <a asp-controller="Home" asp-action="Index" class="sidebar-brand">
+            <i class="fas fa-paper-plane text-primary me-2"></i>EmailToSms
+        </a>
+        <nav class="mt-3">
+            <a asp-controller="Home" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                <i class="fas fa-chart-line me-3"></i>Genel Bakış
+            </a>
+            <a asp-controller="EmailAccounts" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "EmailAccounts" ? "active" : "")">
+                <i class="fas fa-envelope-open-text me-3"></i>E-Posta Hesapları
+            </a>
+            <a asp-controller="Logs" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Logs" ? "active" : "")">
+                <i class="fas fa-history me-3"></i>İşlem Logları
+            </a>
+        </nav>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white px-4 py-3 border-bottom">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h4 fw-bold text-secondary">@ViewData["Title"]</span>
+
+                <div class="d-flex align-items-center ms-auto">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success me-4 p-2 shadow-sm">
+                        <i class="fas fa-circle me-1" style="font-size: 8px;"></i> Worker Aktif
+                    </span>
+
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle shadow-sm fw-bold text-secondary border" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield text-primary me-2"></i>Sistem Yöneticisi
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            <li><a class="dropdown-item py-2" href="#"><i class="fas fa-cog me-2 text-secondary"></i>Profil Ayarları</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger fw-bold" asp-controller="Auth" asp-action="Logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Sistemden Çıkış Yap
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid p-4 p-md-5 flex-grow-1">
+            @RenderBody()
+        </div>
+
+        <footer class="text-center py-3 text-muted small bg-white mt-auto border-top">
+            &copy; @DateTime.Now.Year - EmailToSms Entegrasyon Platformu. Tüm Hakları Saklıdır.
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

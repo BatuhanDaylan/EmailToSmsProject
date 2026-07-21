@@ -21,6 +21,12 @@ builder.Services.AddScoped<EmailAccountService>();
 builder.Services.AddScoped<ForwardingRuleService>();
 builder.Services.AddScoped<PhoneNumberService>();
 
+builder.Services.AddHttpClient<AuditLogService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https://localhost:5001/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
 // Named HttpClient; API base url appsettings.json içinden okunur
 builder.Services.AddHttpClient("ApiClient", client =>
 {

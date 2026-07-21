@@ -5,27 +5,41 @@
 }
 
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm mt-4">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Yeni Telefon Numarası Ekle</h4>
+    <div class="col-lg-6">
+        <div class="card stat-card border-0 shadow-sm mt-3">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-success"><i class="fas fa-phone-plus me-2"></i>Yeni SMS Hedefi Ekle</h5>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="alert alert-success bg-success bg-opacity-10 border-0 mb-4 d-flex align-items-center" role="alert">
+                    <i class="fas fa-info-circle fs-4 text-success me-3"></i>
+                    <div class="small text-secondary">
+                        <strong>Format:</strong> Numarayı başında <strong>+</strong> işareti ve ülke kodu olacak şekilde (Örn: +905551234567) boşluk bırakmadan giriniz.
+                    </div>
+                </div>
+
                 <form asp-action="Create" method="post">
                     <input type="hidden" asp-for="ForwardingRuleId" />
                     <input type="hidden" name="accountId" value="@accountId" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small mb-4"></div>
 
-                    <div class="mb-3">
-                        <label asp-for="PhoneNumber" class="form-label fw-bold">Telefon Numarası</label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="Örn: +905551234567" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    <div class="mb-4">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold text-secondary">Telefon Numarası</label>
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-light border-end-0 text-success"><i class="fas fa-mobile-alt"></i></span>
+                            <input asp-for="PhoneNumber" class="form-control border-start-0 ps-0 fw-bold text-dark" placeholder="+905551234567" />
+                        </div>
+                        <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a asp-action="Index" asp-route-ruleId="@Model.ForwardingRuleId" asp-route-accountId="@accountId" class="btn btn-outline-secondary">İptal</a>
-                        <button type="submit" class="btn btn-success">Numarayı Kaydet</button>
+                    <hr class="text-muted my-4" />
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a asp-action="Index" asp-route-ruleId="@Model.ForwardingRuleId" asp-route-accountId="@accountId" class="btn btn-light px-4 shadow-sm fw-bold text-muted">Vazgeç</a>
+                        <button type="submit" class="btn btn-success px-4 shadow-sm fw-bold">
+                            <i class="fas fa-save me-2"></i>Numarayı Kaydet
+                        </button>
                     </div>
                 </form>
             </div>
