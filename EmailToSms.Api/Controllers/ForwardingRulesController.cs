@@ -1,21 +1,17 @@
 ﻿using EmailToSms.Api.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using EmailToSms.Api.Models;
 using EmailToSms.Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Graph.Models;
+using EmailToSms.Api.Common;
 
 namespace EmailToSms.Api.Controllers
 {
     [Authorize]
-    [Route("api/[Controller]")]
-    [ApiController]
-    public class ForwardingRulesController : ControllerBase
+    public class ForwardingRulesController : CustomBaseController
     {
-
         //Veritabanımızı enjekte ediyoruz
         private readonly EmailToSmsDbContext _context;
         public ForwardingRulesController(EmailToSmsDbContext context)
@@ -37,12 +33,11 @@ namespace EmailToSms.Api.Controllers
 
             //ıdyi kontrol ediyoruz
             var emailAccountExists = await _context.EmailAccounts
-                .AnyAsync(e => e.Id == dto.EmailAccountId && e.UserId==userId );
+                .AnyAsync(e => e.Id == dto.EmailAccountId && e.UserId == userId);
 
-            //ıdye göre kontrol sağlıyoruz
             if (!emailAccountExists)
             {
-                return Unauthorized(new { Message = "Seçilen E-Posta hesabı size ait değil veya bulunamadı" });
+                return CreateActionResult(Result.Failture("Yetkisiz işlem.", "Seçilen E-Posta hesabı size ait değil veya bulunamadı.", 403));
             }
 
             //kuralları eklediğimi yapı
@@ -52,14 +47,13 @@ namespace EmailToSms.Api.Controllers
                 SenderKeyword = dto.SenderKeyword,
                 SubjectKeyword = dto.SubjectKeyword,
                 BodyKeyword = dto.BodyKeyword
-
             };
 
             //veritabanımıza ekleyip kaydediyoruz
             _context.ForwardingRules.Add(newRule);
             await _context.SaveChangesAsync();
 
-            return Ok(new {Message = "Kural ve başarıyla eklendi" , RuleId = newRule.Id });
+            return CreateActionResult(ResultOfT<int>.Success(newRule.Id, "Kural başarıyla eklendi.", 201));
         }
 
         //kuralları listeleme methodu
@@ -75,17 +69,17 @@ namespace EmailToSms.Api.Controllers
                 {
                     Id = r.Id,
                     SenderKeyword = r.SenderKeyword,
-                    SubjectKeyword= r.SubjectKeyword,
-                    BodyKeyword= r.BodyKeyword
+                    SubjectKeyword = r.SubjectKeyword,
+                    BodyKeyword = r.BodyKeyword
                 })
                 .ToListAsync();
 
-            return Ok(rules);
+            return CreateActionResult(ResultOfT<List<ForwardingRuleResponseDto>>.Success(rules, "Kurallar başarıyla listelendi."));
         }
 
         //kural güncelleme methodu
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRule(int id , [FromBody] ForwardingRuleUpdateDto dto)
+        public async Task<IActionResult> UpdateRule(int id, [FromBody] ForwardingRuleUpdateDto dto)
         {
             var userId = GetUserId();
 
@@ -96,7 +90,7 @@ namespace EmailToSms.Api.Controllers
 
             if (rule == null)
             {
-                return NotFound(new { Message = "Kural bulunamadı veya yetkiniz yok" });
+                return CreateActionResult(Result.Failture("Bulunamadı.", "Kural bulunamadı veya yetkiniz yok.", 404));
             }
 
             //kuralı güncelliyoruz
@@ -106,30 +100,29 @@ namespace EmailToSms.Api.Controllers
 
             //veritabanına kaydediyoruz
             await _context.SaveChangesAsync();
-            return Ok(new {Message = "Kural başarıyla güncellendi"});
+            return CreateActionResult(Result.Success("Kural başarıyla güncellendi."));
         }
 
-        //kural silme methodu
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRule(int id)
         {
             var userId = GetUserId();
 
-            //silincek kuralın sahibini kontrol ediyoruz
             var rule = await _context.ForwardingRules
-                .Include (r => r.EmailAccount)
-                .FirstOrDefaultAsync(r => r.Id == id && r.EmailAccount!.UserId == userId );
+                .Include(r => r.EmailAccount)
+                .FirstOrDefaultAsync(r => r.Id == id && r.EmailAccount!.UserId == userId);
 
-            if(rule == null)
+            if (rule == null)
             {
-                return NotFound(new { Message = "Kural bulunamadı veya yetkiniz yok" });
+                return CreateActionResult(Result.Failture("Bulunamadı.", "Kural bulunamadı veya yetkiniz yok.", 404));
             }
 
-            //hesabı silip veritabanımıza kaydediyoruz
-            _context.ForwardingRules .Remove(rule);
-            await _context.SaveChangesAsync();
-            return Ok(new { Message = "Kural ve bağlı tüm telefon numaraları başarıyla silindi" });
-        }
+            // DÜZELTME: Soft Delete
+            rule.IsDeleted = true;
+            rule.IsActive = false;
 
+            await _context.SaveChangesAsync();
+            return CreateActionResult(Result.Success("Kural başarıyla silindi."));
+        }
     }
 }

@@ -4,57 +4,52 @@ using EmailToSms.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Graph.Models;
 using System.Security.Claims;
+using EmailToSms.Api.Common;
 
 namespace EmailToSms.Api.Controllers
 {
     [Authorize]
-    [Route("api/[Controller]")]
-    [ApiController]
-    public class PhoneNumbersController : Controller
+    public class PhoneNumbersController : CustomBaseController
     {
         private readonly EmailToSmsDbContext _context;
         public PhoneNumbersController(EmailToSmsDbContext context)
         {
             _context = context;
         }
-        private string GetUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        }
 
-        //numara ekleme methodu
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
         [HttpPost]
         public async Task<IActionResult> AddPhoneNumber([FromBody] PhoneNumberCreateDto dto)
         {
             var userId = GetUserId();
 
-            //ıdyi kontrol ediyoruz
-            var ruleExist = await _context.ForwardingRules
-                .AnyAsync(r => r.Id == dto.ForwardingRuleId && r.EmailAccount!.UserId == userId );
+            var rule = await _context.ForwardingRules
+                .FirstOrDefaultAsync(r => r.Id == dto.ForwardingRuleId && r.EmailAccount!.UserId == userId);
 
-            if(!ruleExist)
+            if (rule == null)
             {
-                return Unauthorized(new { Message = "Bu kural size ait değil veya bulunamadı" });
+                return CreateActionResult(Result.Failture("Yetkisiz işlem.", "Bu kural size ait değil veya bulunamadı.", 403));
             }
 
-            if(string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
             {
-                return BadRequest(new { Message = "Telefon numarası boş olamaz" });
+                return CreateActionResult(Result.Failture("Geçersiz Veri.", "Telefon numarası boş olamaz.", 400));
             }
 
             //telefon numarasının değerlerini atıyoruz
             var newPhoneNumber = new RulePhoneNumber
             {
-                ForwardingRuleId = dto.ForwardingRuleId,
                 PhoneNumber = dto.PhoneNumber,
             };
 
-            //telefon numaramızı veritabanına ekleyip kaydediyoruz
+            newPhoneNumber.ForwardingRules.Add(rule);
+
             _context.RulePhoneNumbers.Add(newPhoneNumber);
             await _context.SaveChangesAsync();
-            return Ok(new { Message = "Telefon numarası başarıyla eklendi" , RulePhoneNumberId = newPhoneNumber.Id });
+
+            return CreateActionResult(ResultOfT<int>.Success(newPhoneNumber.Id, "Telefon numarası başarıyla eklendi.", 201));
         }
 
         //numara listeleme methodu
@@ -67,14 +62,14 @@ namespace EmailToSms.Api.Controllers
             var ruleExist = await _context.ForwardingRules
                 .AnyAsync(r => r.Id == ruleId && r.EmailAccount!.UserId == userId);
 
-            if(!ruleExist)
+            if (!ruleExist)
             {
-                return Unauthorized(new { Message = "Bu kural size ait değil veya bulunamadı" });
+                return CreateActionResult(Result.Failture("Yetkisiz işlem.", "Bu kural size ait değil veya bulunamadı.", 403));
             }
 
             //numaraları listeliyoruz
             var numbers = await _context.RulePhoneNumbers
-                .Where(p => p.ForwardingRuleId == ruleId)
+                .Where(p => p.ForwardingRules.Any(r => r.Id == ruleId))
                 .Select(p => new PhoneNumberResponseDto
                 {
                     Id = p.Id,
@@ -82,30 +77,28 @@ namespace EmailToSms.Api.Controllers
                 })
                 .ToListAsync();
 
-            //listelediğimiz numaralarımızı döndürüyoruz
-            return Ok(numbers);
+            return CreateActionResult(ResultOfT<List<PhoneNumberResponseDto>>.Success(numbers, "Numaralar listelendi."));
         }
 
-        //numara güncelleme methodu
-        [HttpPost("{id}")]
-        public async Task<IActionResult> UpdatePhoneNumber(int id , [FromBody] PhoneNumberUpdateDto dto)
+        [HttpPut("{id}")] // HttpPost olarak yazılmıştı, standarda uyması için HttpPut'a çevrildi
+        public async Task<IActionResult> UpdatePhoneNumber(int id, [FromBody] PhoneNumberUpdateDto dto)
         {
             var userId = GetUserId();
 
-            if(string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
             {
-                return BadRequest(new { Message = "Telefon numarası boş olamaz" });
+                return CreateActionResult(Result.Failture("Geçersiz Veri.", "Telefon numarası boş olamaz.", 400));
             }
 
             //Kuralın ve mail adresinin ıdsi kontrol ediliyor
             var phoneNumber = await _context.RulePhoneNumbers
-                .Include(p => p.ForwardingRule)
-                .ThenInclude(r => r!.EmailAccount)
-                .FirstOrDefaultAsync(p => p.Id == id && p.ForwardingRule!.EmailAccount.UserId == userId);
+                .Include(p => p.ForwardingRules)
+                .ThenInclude(r => r.EmailAccount)
+                .FirstOrDefaultAsync(p => p.Id == id && p.ForwardingRules.Any(r => r.EmailAccount!.UserId == userId));
 
-            if(phoneNumber == null)
+            if (phoneNumber == null)
             {
-                return NotFound(new { Message = "Telefon numarası bulunamadı yada yetkiniz yok" });
+                return CreateActionResult(Result.Failture("Bulunamadı.", "Telefon numarası bulunamadı veya yetkiniz yok.", 404));
             }
 
             //telefon numaramızı değiştiriyoruz
@@ -113,7 +106,7 @@ namespace EmailToSms.Api.Controllers
 
             //değiştirilen numara veri tabanında değiştirilir
             await _context.SaveChangesAsync();
-            return Ok(new { Message = "Telefon numaranız başarıyla değiştirildi" });
+            return CreateActionResult(Result.Success("Telefon numaranız başarıyla değiştirildi."));
         }
 
         //numara silme methodu
@@ -122,22 +115,23 @@ namespace EmailToSms.Api.Controllers
         {
             var userId = GetUserId();
 
-            //Kuralın ve mail adresinin ıdsi kontrol ediliyor
             var phoneNumber = await _context.RulePhoneNumbers
-                .Include(p => p.ForwardingRule)
-                .ThenInclude(r => r!.EmailAccount)
-                .FirstOrDefaultAsync(p => p.Id == id && p.ForwardingRule!.EmailAccount.UserId == userId);
+                .Include(p => p.ForwardingRules)
+                .ThenInclude(r => r.EmailAccount)
+                .FirstOrDefaultAsync(p => p.Id == id && p.ForwardingRules.Any(r => r.EmailAccount!.UserId == userId));
 
-            if(phoneNumber == null)
+            if (phoneNumber == null)
             {
-                return NotFound(new { Message = "Telefon numarası bulunamadı yada yetkiniz yok" });
+                return CreateActionResult(Result.Failture("Bulunamadı.", "Telefon numarası bulunamadı veya yetkiniz yok.", 404));
             }
 
-            //telefon numarasını veritabanından silip kaydediyoruz
-            _context.RulePhoneNumbers.Remove(phoneNumber);
+            // DÜZELTME: Soft Delete
+            phoneNumber.IsDeleted = true;
+            phoneNumber.IsActive = false;
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Numara başarıyla silindi" });
+            return CreateActionResult(Result.Success("Numara başarıyla silindi."));
         }
     }
 }

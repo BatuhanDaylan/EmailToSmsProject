@@ -3,14 +3,12 @@ using EmailToSms.Api.Models;
 
 namespace EmailToSms.Api.Data
 {
-    //Sadece uygulamanın asıl iş modelini tutan veritabanı beyni
     public class EmailToSmsDbContext : DbContext
     {
         public EmailToSmsDbContext(DbContextOptions<EmailToSmsDbContext> options) : base(options)
         {
         }
 
-        //Uygulama tabloları
         public DbSet<EmailAccount> EmailAccounts { get; set; }
         public DbSet<ForwardingRule> ForwardingRules { get; set; }
         public DbSet<RulePhoneNumber> RulePhoneNumbers { get; set; }
@@ -20,23 +18,37 @@ namespace EmailToSms.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //Tablolar arası ilişkileri garanti altına alıyoruz
+            //Çoka Çok (N:N) İlişki Ara Tablosu (Junction Table)
+            modelBuilder.Entity<ForwardingRule>()
+                .HasMany(r => r.TargetPhoneNumbers)
+                .WithMany(p => p.ForwardingRules)
+                .UsingEntity(j => j.ToTable("ForwardingRulePhoneNumbers"));
 
-            //E-posta hesabı silinirse ona bağlı kurallar da otomatik silinsin 
+            //Global Query Filters (Sadece silinmemiş kayıtları getir)
+            modelBuilder.Entity<EmailAccount>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<ForwardingRule>().HasQueryFilter(r => !r.IsDeleted);
+            modelBuilder.Entity<RulePhoneNumber>().HasQueryFilter(p => !p.IsDeleted);
+
+            //Partial Unique Indexes (PostgreSQL için Npgsql formatı)
+            //Bir kullanıcının aynı e-posta adresini iki kez eklemesini engeller (Silinmemişse)
+            modelBuilder.Entity<EmailAccount>()
+                .HasIndex(e => new { e.UserId, e.EmailAddress })
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+
+            //Bir telefon numarasının sisteme bir kez eklenmesini sağlar (Silinmemişse)
+            modelBuilder.Entity<RulePhoneNumber>()
+                .HasIndex(p => p.PhoneNumber)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+
+            //Tablolar arası 1:N İlişkiler (Cascade işlemleri)
             modelBuilder.Entity<ForwardingRule>()
                 .HasOne(r => r.EmailAccount)
                 .WithMany(e => e.Rules)
                 .HasForeignKey(r => r.EmailAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Bir kural silinirse ona bağlı telefon numaraları da otomatik silinsin
-            modelBuilder.Entity<RulePhoneNumber>()
-                .HasOne(p => p.ForwardingRule)
-                .WithMany(r => r.TargetPhoneNumbers)
-                .HasForeignKey(p => p.ForwardingRuleId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //bir kural silinirse logdaki id değerini null  yap
             modelBuilder.Entity<AuditLog>()
                 .HasOne<ForwardingRule>()
                 .WithMany()

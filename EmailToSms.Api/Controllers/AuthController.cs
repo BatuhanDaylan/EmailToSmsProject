@@ -1,35 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using EmailToSms.Api.Models;
 using EmailToSms.Api.DTOs;
-using Microsoft.Graph.Models;
-using System.Linq.Expressions;
+using EmailToSms.Api.Common;
 
 namespace EmailToSms.Api.Controllers
 {
-    //dışarıdan bu sınıfa nasıl ulaşılacağı
-    [Route("api/[controller]")]
-    //ModelState.IsValid otomatik olarak yapılır ve sınıfın bir veri döndüreceğini söyler
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : CustomBaseController
     {
-        //veritabanı işlemlerinin yapılmasını sağlar
         private readonly UserManager<EmailToSmsUser> _userManager;
-        //JWT tokenın okunmasını sağlar
         private readonly IConfiguration _configuration;
 
-        //projemizin içine entegre ediyoruz
-        public AuthController(UserManager<EmailToSmsUser> userManager , IConfiguration configuration)
+        public AuthController(UserManager<EmailToSmsUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _configuration = configuration;
         }
-     
-        // kayıt yapma işlemleri
+
+        //kullanıcı kayıt işlemi
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
@@ -47,12 +39,13 @@ namespace EmailToSms.Api.Controllers
             //şifreyi hashleyerek gönderir
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
-                return Ok(new {Message = "Kullanıcı kaydedildi"});
+                return CreateActionResult(Result.Success("Kullanıcı başarıyla kaydedildi.", 201));
             }
 
-            return BadRequest(result.Errors);
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return CreateActionResult(Result.Failture("Kayıt işlemi başarısız.", errors, 400));
         }
 
         //giriş yapma işlemleri
@@ -63,20 +56,20 @@ namespace EmailToSms.Api.Controllers
             
             //kullanıcı e posta adresine göre aranıyor
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null) return Unauthorized(new { Message = "E-Posta veya şifte hatalı" });
+            if (user == null)
+                return CreateActionResult(Result.Failture("Giriş başarısız.", "E-Posta veya şifre hatalı.", 401));
 
             //şifre kontrolü
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
-            if (!isPasswordValid) return Unauthorized(new { Message = "E-Posta veya şifre hatalı" });
+            if (!isPasswordValid)
+                return CreateActionResult(Result.Failture("Giriş başarısız.", "E-Posta veya şifre hatalı.", 401));
 
             //şifre doğruysa
             var authClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name , user.UserName!),
-                //Id veritabanıyla olan bağımız
-                new Claim(ClaimTypes.NameIdentifier , user.Id),
-                //JWT için benzersiz tanımlayıcı talebi oluşturmak için kullanılır
-                new Claim(JwtRegisteredClaimNames.Jti , Guid.NewGuid().ToString())
+                new Claim(ClaimTypes.Name, user.UserName!),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             //appsettings.json içerisindeki anahtarımızı şifreliyoruz
@@ -88,18 +81,17 @@ namespace EmailToSms.Api.Controllers
                 audience: _configuration["Jwt:Audience"],
                 expires: DateTime.Now.AddDays(3),
                 claims: authClaims,
-                //token anahtarımıza mühürleniyor
-                signingCredentials: new SigningCredentials(authSigninKey , SecurityAlgorithms.HmacSha256)
-                );
+                signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
+            );
 
-            //tokenı string metne çevireceğiz
-            return Ok(new
+            var tokenResponse = new
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 UserId = user.Id
-            });
-        }
+            };
 
+            return CreateActionResult(ResultOfT<object>.Success(tokenResponse, "Başarıyla giriş yapıldı."));
+        }
     }
 }

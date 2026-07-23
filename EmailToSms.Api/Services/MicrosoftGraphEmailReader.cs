@@ -55,7 +55,7 @@ namespace EmailToSms.Api.Services
                 //graph apinin anlayabilmesi için tarihi ISO 8601 formatında alıp tek tırnak içine sarıyoruz
                 // Tarihi alıyoruz (Microsoft Graph tarihi tırnaksız bekler)
                 // Utc zaman diliminde olduğundan emin olmak için evrensel formata (Z) çeviriyoruz
-                var lastCheckedIso = account.LastChecketAt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+                var lastCheckedIso = account.LastCheckedAt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
 
                 var messages = await graphClient.Users[account.EmailAddress].Messages
                     .GetAsync(config =>
@@ -127,7 +127,7 @@ namespace EmailToSms.Api.Services
                     }
                 }
 
-                account.LastChecketAt = DateTime.UtcNow;
+                account.LastCheckedAt = DateTime.UtcNow;
             }
             //Oluşan hataları catch ile yakalıyoruz
             catch (Exception ex)

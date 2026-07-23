@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EmailToSms.Api.Migrations
+namespace EmailToSms.Api.Migrations.IdentityDb
 {
     [DbContext(typeof(EmailToSmsIdentityDbContext))]
-    [Migration("20260708130227_InitialIdentityDb")]
+    [Migration("20260723083110_InitialIdentityDb")]
     partial class InitialIdentityDb
     {
         /// <inheritdoc />

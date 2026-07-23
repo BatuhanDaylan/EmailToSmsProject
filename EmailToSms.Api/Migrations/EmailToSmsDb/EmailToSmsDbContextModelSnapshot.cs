@@ -80,11 +80,20 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("LastChecketAt")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastCheckedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("TenantId")
@@ -96,6 +105,10 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "EmailAddress")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("EmailAccounts");
                 });
@@ -111,8 +124,17 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
                     b.Property<string>("BodyKeyword")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("EmailAccountId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SenderKeyword")
                         .HasColumnType("text");
@@ -135,8 +157,14 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ForwardingRuleId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -144,9 +172,26 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ForwardingRuleId");
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("RulePhoneNumbers");
+                });
+
+            modelBuilder.Entity("ForwardingRuleRulePhoneNumber", b =>
+                {
+                    b.Property<int>("ForwardingRulesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TargetPhoneNumbersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ForwardingRulesId", "TargetPhoneNumbersId");
+
+                    b.HasIndex("TargetPhoneNumbersId");
+
+                    b.ToTable("ForwardingRulePhoneNumbers", (string)null);
                 });
 
             modelBuilder.Entity("EmailToSms.Api.Models.AuditLog", b =>
@@ -180,25 +225,24 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
                     b.Navigation("EmailAccount");
                 });
 
-            modelBuilder.Entity("EmailToSms.Api.Models.RulePhoneNumber", b =>
+            modelBuilder.Entity("ForwardingRuleRulePhoneNumber", b =>
                 {
-                    b.HasOne("EmailToSms.Api.Models.ForwardingRule", "ForwardingRule")
-                        .WithMany("TargetPhoneNumbers")
-                        .HasForeignKey("ForwardingRuleId")
+                    b.HasOne("EmailToSms.Api.Models.ForwardingRule", null)
+                        .WithMany()
+                        .HasForeignKey("ForwardingRulesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ForwardingRule");
+                    b.HasOne("EmailToSms.Api.Models.RulePhoneNumber", null)
+                        .WithMany()
+                        .HasForeignKey("TargetPhoneNumbersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EmailToSms.Api.Models.EmailAccount", b =>
                 {
                     b.Navigation("Rules");
-                });
-
-            modelBuilder.Entity("EmailToSms.Api.Models.ForwardingRule", b =>
-                {
-                    b.Navigation("TargetPhoneNumbers");
                 });
 #pragma warning restore 612, 618
         }

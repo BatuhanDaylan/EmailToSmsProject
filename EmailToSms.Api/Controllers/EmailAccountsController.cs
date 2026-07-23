@@ -1,19 +1,16 @@
 ﻿using EmailToSms.Api.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using EmailToSms.Api.Models;
 using EmailToSms.Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Graph.Models;
+using EmailToSms.Api.Common;
 
 namespace EmailToSms.Api.Controllers
 {
     [Authorize]
-    [Route("api/[Controller]")]
-    [ApiController]
-    public class EmailAccountsController : ControllerBase
+    public class EmailAccountsController : CustomBaseController
     {
 
         private readonly EmailToSmsDbContext _context;
@@ -22,17 +19,11 @@ namespace EmailToSms.Api.Controllers
             _context = context;
         }
 
-        //token içinden Id değerlerini alır
-        private string GetUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        }
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        //E-posta kayıt methodu
         [HttpPost]
-        public async Task<IActionResult> AddAccount([FromBody] EmailAccountCreateDto dto) 
+        public async Task<IActionResult> AddAccount([FromBody] EmailAccountCreateDto dto)
         {
-
             //kullanıcının ıdsini çekiyoruz
             var userId = GetUserId();
 
@@ -41,17 +32,17 @@ namespace EmailToSms.Api.Controllers
             {
                 UserId = userId,
                 EmailAddress = dto.EmailAddress,
-                TenantId = dto.TentantId,
+                TenantId = dto.TenantId,
                 ClientId = dto.ClientId,
                 ClientSecret = dto.ClientSecret,
-                LastChecketAt = DateTime.UtcNow,
+                LastCheckedAt = DateTime.UtcNow
             };
 
             //bilgileri databaseimize ekleyip kaydediyoruz
             _context.EmailAccounts.Add(newAccount);
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "E-Posta hesabı başarıyla eklendi", AccountId = newAccount.Id});
+            return CreateActionResult(ResultOfT<int>.Success(newAccount.Id, "E-Posta hesabı başarıyla eklendi.", 201));
         }
 
         //E-posta listeleme methodu
@@ -69,60 +60,60 @@ namespace EmailToSms.Api.Controllers
                 {
                     Id = e.Id,
                     EmailAddress = e.EmailAddress,
-                    LastChecked = e.LastChecketAt
-
+                    LastChecked = e.LastCheckedAt
                 })
                 .ToListAsync();
-            return Ok(accounts);
+
+            return CreateActionResult(ResultOfT<List<EmailAccountResponseDto>>.Success(accounts, "Hesaplar başarıyla listelendi."));
         }
 
         //E-posta güncelleme methodu
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(int id , EmailAccountUpdateDto dto)
+        public async Task<IActionResult> UpdateAccount(int id, EmailAccountUpdateDto dto)
         {
             //kullanıcı Idsini çekiyoruz
             var userId = GetUserId();
 
             //sadece kullanıcıya ait E-Posta hesabı silinecek
             var account = await _context.EmailAccounts
-                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId );
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
             if (account == null)
             {
-                return NotFound(new { Message = "E-Posta bulunamadı veya yetkiniz yok" });
+                return CreateActionResult(Result.Failture("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
             }
 
             //hesabı güncelliyoruz
             account.EmailAddress = dto.EmailAddress;
-            account.TenantId = dto.TentantId;
+            account.TenantId = dto.TenantId;
             account.ClientId = dto.ClientId;
             account.ClientSecret = dto.ClientSecret;
 
             //değişiklikleri veritabanına kaydediyoruz
             await _context.SaveChangesAsync();
-            return Ok(new {Message = "E-Posta hesabı bilgileri başarıyla güncellendi"});
+            return CreateActionResult(Result.Success("E-Posta hesabı bilgileri başarıyla güncellendi."));
         }
 
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(int id)
         {
-            //kullanıcı Idsini çekiyoruz
             var userId = GetUserId();
 
-            //silinmek istenen hesabı buluyoruz sadece o kullanıcıya aitse silinecek
             var account = await _context.EmailAccounts
-                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId );
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
-            if (account == null) return NotFound(new { Message = "E-Posta bulunamadı veya yetkiniz yok" });
+            if (account == null)
+            {
+                return CreateActionResult(Result.Failture("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
+            }
 
-            //hesabı silip databaseimize kaydediyoruz
-            _context.EmailAccounts.Remove(account);
+            // DÜZELTME: Veritabanından silmek yerine çöp kutusuna atıyoruz (Soft Delete)
+            account.IsDeleted = true;
+            account.IsActive = false; // Pasife de çekebiliriz
+
             await _context.SaveChangesAsync();
-            return Ok(new { Message = "E-Posta hesabı başarıyla silindi" });
-
+            return CreateActionResult(Result.Success("E-Posta hesabı başarıyla silindi."));
         }
-
-
     }
 }

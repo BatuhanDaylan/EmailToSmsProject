@@ -1,7 +1,7 @@
 ﻿namespace EmailToSms.Api.Models
 {
     // E-posta hesaplarını ve Microsoft 365 bağlantı bilgilerini tutan ana sınıf
-    public class EmailAccount
+    public class EmailAccount : BaseEntity
     {
         public int Id { get; set; }
 
@@ -15,9 +15,9 @@
         public string ClientSecret { get; set; } = string.Empty;
 
         //Milad tarihini tutan özellik
-        public DateTime LastChecketAt { get; set; } = DateTime.UtcNow;
+        public DateTime LastCheckedAt { get; set; } = DateTime.UtcNow;
 
-        // Bir e-posta hesabına bağlı birden fazla kural olabilir
+        //Bir e-posta hesabına bağlı birden fazla kural olabilir
         public List<ForwardingRule> Rules { get; set; } = new List<ForwardingRule>();
     }
 }

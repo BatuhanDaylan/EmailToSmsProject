@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EmailToSms.Api.Migrations
+namespace EmailToSms.Api.Migrations.IdentityDb
 {
     [DbContext(typeof(EmailToSmsIdentityDbContext))]
     partial class EmailToSmsIdentityDbContextModelSnapshot : ModelSnapshot

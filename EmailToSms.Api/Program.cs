@@ -1,4 +1,5 @@
 using EmailToSms.Api.Data;
+using EmailToSms.Api.Middlewares;
 using EmailToSms.Api.Models;
 using EmailToSms.Api.Services;
 using EmailToSms.Api.Workers;
@@ -102,6 +103,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

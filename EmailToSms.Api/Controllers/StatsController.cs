@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using EmailToSms.Api.Common;
 
 namespace EmailToSms.Api.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class StatsController : ControllerBase
+    public class StatsController : CustomBaseController
     {
         private readonly EmailToSmsDbContext _context;
         public StatsController(EmailToSmsDbContext context)
@@ -39,12 +38,14 @@ namespace EmailToSms.Api.Controllers
             var smsSentCount = await _context.AuditLogs
                 .CountAsync(l => l.EventType == "SmsSent" && l.IsSuccess && l.EmailAccountId.HasValue && accountIds.Contains(l.EmailAccountId.Value));
 
-            return Ok(new
+            var statsResult = new
             {
                 AccountCount = accountCount,
                 RuleCount = ruleCount,
                 SmsSentCount = smsSentCount
-            });
+            };
+
+            return CreateActionResult(ResultOfT<object>.Success(statsResult, "İstatistikler başarıyla getirildi."));
         }
     }
 }

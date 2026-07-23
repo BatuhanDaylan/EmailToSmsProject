@@ -58,7 +58,7 @@ namespace EmailToSms.Api.Workers
 
                             await emailReaderService.ReadEmailAndProcessAsync(account);
 
-                            account.LastChecketAt = DateTime.UtcNow;
+                            account.LastCheckedAt = DateTime.UtcNow;
 
                             // YENİ: Her bir hesabın başarıyla tarandığını veritabanına işliyoruz
                             await auditLogService.LogAsync(

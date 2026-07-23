@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EmailToSms.Api.Migrations
+namespace EmailToSms.Api.Migrations.IdentityDb
 {
     /// <inheritdoc />
     public partial class InitialIdentityDb : Migration

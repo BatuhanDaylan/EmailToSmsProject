@@ -50,6 +50,20 @@ MicrosoftGraphEmailReader içerisinde graph apinin anlayabilmesi için tarihi IS
 DTO larda eksik olan required kısımları eklendi
 Web katmanı için mvc web projesi oluşturuldu
 token bağlantısı için TokenHandler servisi yazıldı ve program.cs içerisine gerekli kodlar eklendi
+Diğer classların miras alacağı bir abstract class eklendi içerisine CreatedAt IsDeleted IsActive propları yazıldı
+RulePhoneNumber içerindeki kurallara bağımlılık kaldırılıyor çoklu ilişki kuruldu
+PhoneNumbersController kurallar ve numaralar arasındaki bağımlılık kaldırıldığı için çoka çok ilişkiye göre düzenlendi
+Common klasörü eklendi içerisine hata kontrolü için gerekli Result ve ResultOfT(veri taşıyan) eklendi içerisine hatanın durumlarını tutan ve aynı zamanda veri taşıyan kodlar yazıldı
+Middlewares klasörü eklendi içerisine ExceptionHandlingMiddleware middleware eklendi ve içerisine hata yönetimi yapacak kodlar yazıldı
+Program.cs içerisine middleware eklendi
+Controller içerisindeki methodların Ok gibi belirsiz responslar döndürmemesi için controller içerisine CustumBaseController eklendi gerekli kodlaar yazıldı
+AuthController içerisindeki methotlar Result döndürecek şekilde düzenlendi
+EmailAccountsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
+ForwardingRulesController içerisindeki methotlar Result döndürecek şekilde düzenlendi
+PhoneNumbersController içerisindeki methotlar Result döndürecek şekilde düzenlendi
+StatsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
+AuditlogsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
+Controllerlar içerisindeki silme methodları veriler veritabanından silinmeyecek sadece deaktif hale alınacak şekilde düzenlendi
 
 
 

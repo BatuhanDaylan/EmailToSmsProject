@@ -9,7 +9,7 @@ namespace EmailToSms.Api.DTOs
         [Required , EmailAddress]
         public string EmailAddress { get; set; } = string.Empty;
         [Required]
-        public string TentantId { get; set; } = string.Empty;
+        public string TenantId { get; set; } = string.Empty;
         [Required]
         public string ClientId { get; set; } = string.Empty;
         [Required]
