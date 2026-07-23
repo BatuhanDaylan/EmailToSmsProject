@@ -16,7 +16,6 @@ namespace EmailToSms.Api.Controllers
     public class EmailAccountsController : ControllerBase
     {
 
-        //uygulama veritabanımızı enjekte ediyotuz
         private readonly EmailToSmsDbContext _context;
         public EmailAccountsController(EmailToSmsDbContext context)
         {
@@ -105,7 +104,6 @@ namespace EmailToSms.Api.Controllers
         }
 
 
-        //E-posta silme meethodu
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(int id)
         {

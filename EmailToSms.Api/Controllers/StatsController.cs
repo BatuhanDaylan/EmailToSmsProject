@@ -36,7 +36,6 @@ namespace EmailToSms.Api.Controllers
             var ruleCount = await _context.ForwardingRules
                 .CountAsync(r => accountIds.Contains(r.EmailAccountId));
 
-            // Başarıyla gönderilmiş SMS kayıtları AuditLogs tablosundan (eventType = "SmsSent")
             var smsSentCount = await _context.AuditLogs
                 .CountAsync(l => l.EventType == "SmsSent" && l.IsSuccess && l.EmailAccountId.HasValue && accountIds.Contains(l.EmailAccountId.Value));
 
