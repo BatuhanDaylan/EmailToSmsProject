@@ -18,7 +18,7 @@ namespace EmailToSms.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //Çoka Çok (N:N) İlişki Ara Tablosu (Junction Table)
+            //Çoka Çok (N:N) İlişki Ara Tablosu
             modelBuilder.Entity<ForwardingRule>()
                 .HasMany(r => r.TargetPhoneNumbers)
                 .WithMany(p => p.ForwardingRules)
@@ -29,20 +29,19 @@ namespace EmailToSms.Api.Data
             modelBuilder.Entity<ForwardingRule>().HasQueryFilter(r => !r.IsDeleted);
             modelBuilder.Entity<RulePhoneNumber>().HasQueryFilter(p => !p.IsDeleted);
 
-            //Partial Unique Indexes (PostgreSQL için Npgsql formatı)
-            //Bir kullanıcının aynı e-posta adresini iki kez eklemesini engeller (Silinmemişse)
+            //Bir kullanıcının aynı e-posta adresini iki kez eklemesini engeller
             modelBuilder.Entity<EmailAccount>()
                 .HasIndex(e => new { e.UserId, e.EmailAddress })
                 .IsUnique()
                 .HasFilter("\"IsDeleted\" = false");
 
-            //Bir telefon numarasının sisteme bir kez eklenmesini sağlar (Silinmemişse)
+            //Bir kullanıcı aynı numarayı iki kez ekleyemez 
             modelBuilder.Entity<RulePhoneNumber>()
-                .HasIndex(p => p.PhoneNumber)
+                .HasIndex(p => new { p.UserId, p.PhoneNumber }) //UserId eklendi
                 .IsUnique()
                 .HasFilter("\"IsDeleted\" = false");
 
-            //Tablolar arası 1:N İlişkiler (Cascade işlemleri)
+            //Tablolar arası 1:N İlişkiler
             modelBuilder.Entity<ForwardingRule>()
                 .HasOne(r => r.EmailAccount)
                 .WithMany(e => e.Rules)

@@ -45,7 +45,7 @@ namespace EmailToSms.Api.Controllers
             }
 
             var errors = result.Errors.Select(e => e.Description).ToList();
-            return CreateActionResult(Result.Failture("Kayıt işlemi başarısız.", errors, 400));
+            return CreateActionResult(Result.Failure("Kayıt işlemi başarısız.", errors, 400));
         }
 
         //giriş yapma işlemleri
@@ -57,12 +57,12 @@ namespace EmailToSms.Api.Controllers
             //kullanıcı e posta adresine göre aranıyor
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return CreateActionResult(Result.Failture("Giriş başarısız.", "E-Posta veya şifre hatalı.", 401));
+                return CreateActionResult(Result.Failure("Giriş başarısız.", "E-Posta veya şifre hatalı.", 401));
 
             //şifre kontrolü
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordValid)
-                return CreateActionResult(Result.Failture("Giriş başarısız.", "E-Posta veya şifre hatalı.", 401));
+                return CreateActionResult(Result.Failure("Giriş başarısız.", "E-Posta veya şifre hatalı.", 401));
 
             //şifre doğruysa
             var authClaims = new List<Claim>

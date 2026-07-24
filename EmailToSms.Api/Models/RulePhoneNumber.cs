@@ -4,6 +4,9 @@
     {
         public int Id { get; set; }
 
+        //kullanıcının Id değerini tutar
+        public string UserId { get; set; } = string.Empty;
+
         //Hedef telefon numarası
         public string PhoneNumber { get; set; } = string.Empty;
 

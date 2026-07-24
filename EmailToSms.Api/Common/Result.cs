@@ -26,13 +26,13 @@ namespace EmailToSms.Api.Common
         }
 
         //işlem başarısızsa hata listesi döndüren yardımcı method
-        public static Result Failture(string message , List<string> errors , int statusCode = 400)
+        public static Result Failure(string message , List<string> errors , int statusCode = 400)
         {
             return new Result(false , message , statusCode , errors);
         }
 
         //işlem başarısızsa tek bir hata döndüren yardımcı method
-        public static Result Failture(string message , string error , int statusCode = 400)
+        public static Result Failure(string message , string error , int statusCode = 400)
         {
             return new Result(false, message, statusCode , new List<string> { error });
         }

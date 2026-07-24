@@ -37,7 +37,20 @@ namespace EmailToSms.Api.Controllers
 
             if (!emailAccountExists)
             {
-                return CreateActionResult(Result.Failture("Yetkisiz işlem.", "Seçilen E-Posta hesabı size ait değil veya bulunamadı.", 403));
+                return CreateActionResult(Result.Failure("Yetkisiz işlem.", "Seçilen E-Posta hesabı size ait değil veya bulunamadı.", 403));
+            }
+
+            //Birebir aynı kural bu e-posta hesabı için zaten var mı
+            var isRuleExists = await _context.ForwardingRules
+                .AnyAsync(r => r.EmailAccountId == dto.EmailAccountId
+                            && r.SenderKeyword == dto.SenderKeyword
+                            && r.SubjectKeyword == dto.SubjectKeyword
+                            && r.BodyKeyword == dto.BodyKeyword
+                            && !r.IsDeleted);
+
+            if (isRuleExists)
+            {
+                return CreateActionResult(Result.Failure("Kayıt başarısız.", "Tamamen aynı filtrelere sahip bir kural zaten mevcut.", 409));
             }
 
             //kuralları eklediğimi yapı
@@ -90,7 +103,21 @@ namespace EmailToSms.Api.Controllers
 
             if (rule == null)
             {
-                return CreateActionResult(Result.Failture("Bulunamadı.", "Kural bulunamadı veya yetkiniz yok.", 404));
+                return CreateActionResult(Result.Failure("Bulunamadı.", "Kural bulunamadı veya yetkiniz yok.", 404));
+            }
+
+            //Güncellenmek istenen veriler başka bir kuralla aynı mı oluyor
+            var isDuplicateRuleExists = await _context.ForwardingRules
+                .AnyAsync(r => r.EmailAccountId == rule.EmailAccountId
+                            && r.Id != id //Kendisi hariç
+                            && r.SenderKeyword == dto.SenderKeyword
+                            && r.SubjectKeyword == dto.SubjectKeyword
+                            && r.BodyKeyword == dto.BodyKeyword
+                            && !r.IsDeleted);
+
+            if (isDuplicateRuleExists)
+            {
+                return CreateActionResult(Result.Failure("Güncelleme başarısız.", "Tamamen aynı filtrelere sahip başka bir kuralınız zaten mevcut.", 409));
             }
 
             //kuralı güncelliyoruz
@@ -114,7 +141,7 @@ namespace EmailToSms.Api.Controllers
 
             if (rule == null)
             {
-                return CreateActionResult(Result.Failture("Bulunamadı.", "Kural bulunamadı veya yetkiniz yok.", 404));
+                return CreateActionResult(Result.Failure("Bulunamadı.", "Kural bulunamadı veya yetkiniz yok.", 404));
             }
 
             // DÜZELTME: Soft Delete

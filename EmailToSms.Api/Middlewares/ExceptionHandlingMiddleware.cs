@@ -37,7 +37,7 @@ namespace EmailToSms.Api.Middlewares
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             //hatayı ortak result sınıfı ile gönderiyoruz
-            var response = Result.Failture("Sunucu tarafında beklenmedik bir hata oluştu.", exception.Message);
+            var response = Result.Failure("Sunucu tarafında beklenmedik bir hata oluştu.", exception.Message);
 
             //result nesnemizi json formatına çevirip önyüzümüze gönderiyoruz
             var json = JsonSerializer.Serialize(response, new JsonSerializerOptions

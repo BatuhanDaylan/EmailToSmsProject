@@ -27,6 +27,15 @@ namespace EmailToSms.Api.Controllers
             //kullanıcının ıdsini çekiyoruz
             var userId = GetUserId();
 
+            //Bu kullanıcı bu maili daha önce eklemiş mi (Silinenler hariç)
+            var isEmailExists = await _context.EmailAccounts
+                .AnyAsync(e => e.UserId == userId && e.EmailAddress == dto.EmailAddress && !e.IsDeleted);
+
+            if (isEmailExists)
+            {
+                return CreateActionResult(Result.Failure("Kayıt başarısız.", "Bu e-posta adresi zaten hesabınıza ekli.", 409));
+            }
+
             //girilen mail adresinin bilgilerini kaydediyoruz
             var newAccount = new EmailAccount
             {
@@ -80,7 +89,7 @@ namespace EmailToSms.Api.Controllers
 
             if (account == null)
             {
-                return CreateActionResult(Result.Failture("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
+                return CreateActionResult(Result.Failure("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
             }
 
             //hesabı güncelliyoruz
@@ -105,7 +114,7 @@ namespace EmailToSms.Api.Controllers
 
             if (account == null)
             {
-                return CreateActionResult(Result.Failture("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
+                return CreateActionResult(Result.Failure("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
             }
 
             // DÜZELTME: Veritabanından silmek yerine çöp kutusuna atıyoruz (Soft Delete)

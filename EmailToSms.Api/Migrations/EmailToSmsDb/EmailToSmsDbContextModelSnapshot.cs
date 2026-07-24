@@ -170,9 +170,13 @@ namespace EmailToSms.Api.Migrations.EmailToSmsDb
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("PhoneNumber")
+                    b.HasIndex("UserId", "PhoneNumber")
                         .IsUnique()
                         .HasFilter("\"IsDeleted\" = false");
 
