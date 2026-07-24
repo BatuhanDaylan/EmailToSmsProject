@@ -11,58 +11,73 @@ namespace EmailToSms.Web.Services
             _httpClient = httpClientFactory.CreateClient("ApiClient");
         }
 
-        //dışarıdan e-posta Id si alır ve ona bağlı kuralları getirir
-        public async Task<List<PhoneNumberViewModel>> GetNumberByRuleAsync(int ruleId)
+        //kullanıcının tüm rehberinin gelmesi
+        public async Task<List<PhoneNumberViewModel>> GetMyPhoneBookAsync()
         {
-            var response = await _httpClient.GetAsync($"api/PhoneNumbers/rule/{ruleId}");
-            if(response.IsSuccessStatusCode)
+            var response = await _httpClient.GetAsync("api/PhoneNumbers");
+            if (response.IsSuccessStatusCode)
             {
-                //dışarıdan alınan JSON formatındaki veriyi Web katmanımızın anlayacağı ViewModel formatına çevirir
-                return await response.Content.ReadFromJsonAsync<List<PhoneNumberViewModel>>() ?? new List<PhoneNumberViewModel>();
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<List<PhoneNumberViewModel>>>();
+                return result?.Data ?? new List<PhoneNumberViewModel>();
             }
             return new List<PhoneNumberViewModel>();
         }
 
-        //formdan gelen kural verilerini apiye gönderir
+        //sadece belirli bir kurala bağlı numaraların getirilesi
+        public async Task<List<PhoneNumberViewModel>> GetNumbersByRuleAsync(int ruleId)
+        {
+            var response = await _httpClient.GetAsync($"api/PhoneNumbers/rule/{ruleId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<List<PhoneNumberViewModel>>>();
+                return result?.Data ?? new List<PhoneNumberViewModel>();
+            }
+            return new List<PhoneNumberViewModel>();
+        }
+
+        //rehbere yeni numara ekle
         public async Task<bool> AddPhoneNumberAsync(PhoneNumberCreateViewModel model)
         {
-            //json formatına çağırıp gönderir
             var response = await _httpClient.PostAsJsonAsync("api/PhoneNumbers", model);
             return response.IsSuccessStatusCode;
         }
 
-        //formdan gelen verileri idye göre apiye gönderir
+        //rehberdeki numarayı güncelle
         public async Task<bool> UpdatePhoneNumberAsync(int id, PhoneNumberUpdateViewModel model)
         {
-            var response = await _httpClient.PostAsJsonAsync($"api/PhoneNumbers/{id}", model);
-
-            // Eğer API güncellemeyi reddederse (200 OK dönmezse) hatayı yakala ve fırlat:
+            var response = await _httpClient.PutAsJsonAsync($"api/PhoneNumbers/{id}", model);
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Kod: {response.StatusCode} | Detay: {error}");
+                throw new Exception($"Güncelleme Başarısız: {error}");
             }
-
             return true;
         }
 
-        //silinecek kuralı apiye yolla
-        public async Task<bool > DeletePhoneNumberAsync(int id)
+        //numarayı rehberden tamamen sil
+        public async Task<bool> DeletePhoneNumberAsync(int id)
         {
             var response = await _httpClient.DeleteAsync($"api/PhoneNumbers/{id}");
-
-            //Eğer API işlemi onaylamazsa 
             if (!response.IsSuccessStatusCode)
             {
-                //API'nin gönderdiği arka plan hata detayını okuyoruz
                 var errorContent = await response.Content.ReadAsStringAsync();
-
-                //Hatayı Controller'a fırlatıyoruz ki ekrandaki kırmızı kutuya yazsın
-                throw new Exception($"Kod: {response.StatusCode} | Detay: {errorContent}");
+                throw new Exception($"Silme Başarısız: {errorContent}");
             }
-
             return true;
+        }
 
+        //numarayı kurala bağla
+        public async Task<bool> AssignToRuleAsync(PhoneRuleAssignViewModel model)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/PhoneNumbers/assign", model);
+            return response.IsSuccessStatusCode;
+        }
+
+        //numarayı kuraldan kopar
+        public async Task<bool> UnassignFromRuleAsync(PhoneRuleAssignViewModel model)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/PhoneNumbers/unassign", model);
+            return response.IsSuccessStatusCode;
         }
     }
 }

@@ -64,6 +64,8 @@ PhoneNumbersController içerisindeki methotlar Result döndürecek şekilde düz
 StatsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
 AuditlogsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
 Controllerlar içerisindeki silme methodları veriler veritabanından silinmeyecek sadece deaktif hale alınacak şekilde düzenlendi
+
+
 Controllerlar içerisindeki create methodlarına daha önce eklenmişmi kontrolü eklendi
 PhoneNumberController içerisine kurala bağlı rehberi getirme, kurala bağlama, bağlı kuraldan silme gibi yeni merhotlar eklendi
 RulePhoneNumber içerisine UserId eklendi

@@ -46,4 +46,7 @@ Girilen mail sayısını kural sayısını ve şu ana kadar yollanan mesaj sayı
 Log kayıtlarını mesaj olarak ekrana vermek için arayüz veritabanında tutmak için model eklendi
 Arayüzlerdeki ve api kısmındaki hatalar düzeltildi yeniden yazıldı
 
+Api tarafındaki düzenlemelere uygun DTOlar yazıldı ve mevcut DTOlar düzenlendi
+PhoneNumberService içerisindeki kodlar düzenlendi
+
 
