@@ -1,7 +1,6 @@
 ﻿using EmailToSms.Web.Services;
 using EmailToSms.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace EmailToSms.Web.Controllers
 {
@@ -15,86 +14,67 @@ namespace EmailToSms.Web.Controllers
 
         //listeleme methodu
         [HttpGet]
-        public async Task<IActionResult> Index(int ruleId , int accountId)
+        public async Task<IActionResult> Index()
         {
             try
             {
-                var numbers = await _phoneNumberService.GetNumberByRuleAsync(ruleId);
-
-                //sayfada gezinirken ve geri dönerken kullanmak için veri saklıyoruz
-                ViewBag.RuleId = ruleId;
-                ViewBag.AccountId = accountId;
-
+                var numbers = await _phoneNumberService.GetMyPhoneBookAsync();
                 //apiden çektiğimiz verileri viewe yolluyoruz
                 return View(numbers);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Content($"LİSTELEME HATASI: {ex.Message}");
+                return Content($"REHBER LİSTELEME HATASI: {ex.Message}");
             }
         }
 
         //kullanıcı ekleye tıkladığında çalışır
         [HttpGet]
-        public IActionResult Create(int ruleId , int accountId)
+        public IActionResult Create()
         {
-            var model = new PhoneNumberCreateViewModel { ForwardingRuleId = ruleId };
-            ViewBag.AccountId = accountId;
-            return View(model);
+            return View();
         }
 
         //kullanıcı veri girip kaydete bastığında çalışır
         [HttpPost]
-        public async Task<IActionResult> Create(PhoneNumberCreateViewModel model , int accountId)
+        public async Task<IActionResult> Create(PhoneNumberCreateViewModel model)
         {
             //doğrulandıysa AccountId yi geçici olarak kaydediyoruz
-            if(!ModelState.IsValid)
-            {
-                ViewBag.AccountId = accountId;
-                return View(model);
-            }
 
             try
             {
                 //viewmodeldeki verileri api tarafına yolluyoruz
                 var isSuccess = await _phoneNumberService.AddPhoneNumberAsync(model);
-                if(isSuccess) return RedirectToAction("Index", new { ruleId = model.ForwardingRuleId, accountId = accountId });
+                if (isSuccess) return RedirectToAction("Index");
 
-                ModelState.AddModelError(string.Empty, "Numara eklenirken API reddetti.");
-                ViewBag.AccountId = accountId;
+                ModelState.AddModelError(string.Empty, "Numara eklenirken bir hata oluştu (Zaten rehberinizde olabilir).");
                 return View(model);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Content($"EKLEME HATASI: {ex.Message}");
             }
         }
-        
+
         //kullanıcı edit sayfasına girdiğinde çalışır
         [HttpGet]
-        public async Task<IActionResult> Edit(int id , int ruleId , int accountId)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                //hesabın kurallarını çeker istediğimiz kuralı idye göre alırız
-                var numbers = await _phoneNumberService.GetNumberByRuleAsync(ruleId);
+                var numbers = await _phoneNumberService.GetMyPhoneBookAsync();
                 var number = numbers.FirstOrDefault(n => n.Id == id);
-
-                if (number == null) return Content($"HATA: {id} ID'li numara bulunamadı!");
+                if (number == null) return Content("HATA: Numara bulunamadı!");
 
                 //halihazırda var olan değiştirilecek numaranın değerlerini çekiyoruz
                 var model = new PhoneNumberUpdateViewModel
                 {
                     Id = number.Id,
-                    ForwardingRuleId = ruleId,
                     PhoneNumber = number.PhoneNumber
                 };
-
-                //geçici kayıt
-                ViewBag.AccountId = accountId;
                 return View(model);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Content($"DÜZENLEME EKRANI HATASI: {ex.Message}");
             }
@@ -102,50 +82,90 @@ namespace EmailToSms.Web.Controllers
 
         //kullanıcı değişiklikleri yapıp kaydete bastığında
         [HttpPost]
-        public async Task<IActionResult> Edit(int id , int accountId , PhoneNumberUpdateViewModel model)
+        public async Task<IActionResult> Edit(int id, PhoneNumberUpdateViewModel model)
         {
-            //kullanıcının girdiği parametredeki id değeri ile urldeki aynımı
-            if (id != model.Id) return Content("HATA: Güvenlik ihlali, ID'ler uyuşmuyor.");
-
-            //kullanıcının girdiği verinin doğrulanması
-            if (!ModelState.IsValid)
-            {
-                ViewBag.AccountId = accountId;
-                //hata varsa kullanıcıya modeli geri yolla
-                return View(model);
-            }
+            if (id != model.Id) return Content("HATA: Güvenlik ihlali.");
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
-                //güncellenmiş verileri ve hedefin id değerini apiye yolluyoruz
-                var isSuccess = await _phoneNumberService.UpdatePhoneNumberAsync(id, model);
-                //başarılı olurda kendi ait olduğu kuralın numara listesine yönlendiriyoruz
-                if (isSuccess) return RedirectToAction("Index", new { ruleId = model.ForwardingRuleId, accountId = accountId });
-                //başarısız olursa hata mesajıyla formu geri yolluyoruz
-                ModelState.AddModelError(string.Empty , "Güncelleme reddedildi.");
-                ViewBag.AccountId = accountId;
+                await _phoneNumberService.UpdatePhoneNumberAsync(id, model);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                //hata varsa kullanıcıya modeli geri yolla
                 return View(model);
             }
-            catch(Exception ex)
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
             {
-                return Content($"GÜNCELLEME HATASI: {ex.Message}");
+                await _phoneNumberService.DeletePhoneNumberAsync(id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Silme Hatası: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        //kural rehber ilişkisi
+        [HttpGet]
+        public async Task<IActionResult> RuleNumbers(int ruleId, int accountId)
+        {
+            try
+            {
+                var attachedNumbers = await _phoneNumberService.GetNumbersByRuleAsync(ruleId);
+                var allNumbers = await _phoneNumberService.GetMyPhoneBookAsync();
+
+                ViewBag.RuleId = ruleId;
+                ViewBag.AccountId = accountId;
+                ViewBag.AllNumbers = allNumbers;
+
+                return View(attachedNumbers);
+            }
+            catch (Exception ex)
+            {
+                return Content($"KURAL NUMARALARI HATASI: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Assign(int ruleId, int accountId, int phoneNumberId)
+        {
+            try
+            {
+                var model = new PhoneRuleAssignViewModel { ForwardingRuleId = ruleId, PhoneNumberId = phoneNumberId };
+                await _phoneNumberService.AssignToRuleAsync(model);
+                return RedirectToAction("RuleNumbers", new { ruleId, accountId });
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Bağlama işlemi başarısız oldu (Numara zaten bu kurala bağlı olabilir).";
+                return RedirectToAction("RuleNumbers", new { ruleId, accountId });
             }
         }
 
         //silme methodu
         [HttpPost]
-        public async Task<IActionResult> Delete(int id, int ruleId, int accountId)
+        public async Task<IActionResult> Unassign(int ruleId, int accountId, int phoneNumberId)
         {
             try
             {
-                //Bir önceki aşamada öğrendiğimiz TempData mantığıyla güvenli silme
-                await _phoneNumberService.DeletePhoneNumberAsync(id);
-                return RedirectToAction("Index", new { ruleId = ruleId, accountId = accountId });
+                var model = new PhoneRuleAssignViewModel { ForwardingRuleId = ruleId, PhoneNumberId = phoneNumberId };
+                await _phoneNumberService.UnassignFromRuleAsync(model);
+                return RedirectToAction("RuleNumbers", new { ruleId, accountId });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                TempData["ErrorMessage"] = $"Hata Detayı: {ex.Message}";
-                return RedirectToAction("Index", new { ruleId = ruleId, accountId = accountId });
+                TempData["ErrorMessage"] = "Koparma işlemi başarısız oldu.";
+                return RedirectToAction("RuleNumbers", new { ruleId, accountId });
             }
         }
     }

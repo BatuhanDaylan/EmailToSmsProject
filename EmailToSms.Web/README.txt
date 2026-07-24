@@ -48,5 +48,7 @@ Arayüzlerdeki ve api kısmındaki hatalar düzeltildi yeniden yazıldı
 
 Api tarafındaki düzenlemelere uygun DTOlar yazıldı ve mevcut DTOlar düzenlendi
 PhoneNumberService içerisindeki kodlar düzenlendi
+PhoneNumbersController içerisine yeni methodların kodları eklendi kurallarla numaralar arasındaki bağımlılık kaldırıldığı için eski kodlar düzenlendi
+
 
 
