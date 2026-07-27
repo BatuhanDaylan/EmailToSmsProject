@@ -33,7 +33,6 @@ namespace EmailToSms.Api.Workers
 
                 try
                 {
-                    //veritabanı ve e-posta okuyucu servisleri scoped olduğu için yeni bir scope açıyoruz
                     //scoped yaşam döngüsü her http istek başına yeni nesne üretir
                     using (var scope = _scopeFactory.CreateScope())
                     {
