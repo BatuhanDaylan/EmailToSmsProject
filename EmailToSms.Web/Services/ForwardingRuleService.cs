@@ -17,8 +17,9 @@ namespace EmailToSms.Web.Services
             var response = await _httpClient.GetAsync($"api/ForwardingRules/email/{emailAccountId}");
             if (response.IsSuccessStatusCode)
             {
-                //dışarıdan alınan JSON formatındaki veriyi Web katmanımızın anlayacağı ViewModel formatına çevirir
-                return await response.Content.ReadFromJsonAsync<List<ForwardingRuleViewModel>>() ?? new List<ForwardingRuleViewModel>();
+                // DÜZELTME: Veriyi ApiResponse zarfıyla karşılıyoruz
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<ForwardingRuleViewModel>>>();
+                return apiResponse?.Data ?? new List<ForwardingRuleViewModel>();
             }
             return new List<ForwardingRuleViewModel>();
         }

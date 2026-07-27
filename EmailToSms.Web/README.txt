@@ -49,6 +49,14 @@ Arayüzlerdeki ve api kısmındaki hatalar düzeltildi yeniden yazıldı
 Api tarafındaki düzenlemelere uygun DTOlar yazıldı ve mevcut DTOlar düzenlendi
 PhoneNumberService içerisindeki kodlar düzenlendi
 PhoneNumbersController içerisine yeni methodların kodları eklendi kurallarla numaralar arasındaki bağımlılık kaldırıldığı için eski kodlar düzenlendi
+Program.cs içerisine AuditLogService için apiye token taşıyan kod eklendi 
+AuditLogService içerisine try catch blokları eklendi
+AuthService register methodu bir hata olduğunda hatanın direkt ne olduğunu döndürecek şekilde düzenlendi
+AuthController yeni kodlara göre düzenlendi
+AuthService içerisindeki login methodu düzenlendi
+Api tarafını result pattern mimarisine geçirdiğimiz için servislerimiz gelen veriyi okuyamıyor bu nedenle servislerimiz içerisindeki kodları güncelliyoruz
+
+
 
 
 

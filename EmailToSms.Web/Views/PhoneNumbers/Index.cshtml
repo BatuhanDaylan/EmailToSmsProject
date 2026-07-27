@@ -1,38 +1,17 @@
 ﻿@model List<EmailToSms.Web.ViewModels.PhoneNumberViewModel>
 @{
-    ViewData["Title"] = "SMS Numaraları";
-    int ruleId = ViewBag.RuleId;
-    int accountId = ViewBag.AccountId;
+    ViewData["Title"] = "Telefon Rehberim";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h3 class="text-secondary fw-bold mb-0"><i class="fas fa-sms me-2 text-success"></i>SMS Hedefleri</h3>
-        <p class="text-muted mb-0 small">Filtreye takılan e-postalar aşağıdaki telefon numaralarına SMS olarak iletilecektir.</p>
+        <h3 class="text-secondary fw-bold mb-0"><i class="fas fa-address-book me-2 text-success"></i>Kişisel Rehberim</h3>
+        <p class="text-muted mb-0 small">Sisteme eklediğiniz tüm numaralar. Bu numaraları istediğiniz kurala bağlayabilirsiniz.</p>
     </div>
-    <div>
-        <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@accountId" class="btn btn-light shadow-sm fw-bold text-muted me-2">
-            <i class="fas fa-arrow-left me-1"></i> Kurallara Dön
-        </a>
-        <a asp-action="Create" asp-route-ruleId="@ruleId" asp-route-accountId="@accountId" class="btn btn-success shadow-sm fw-bold px-4">
-            <i class="fas fa-plus me-2"></i>Yeni Numara Ekle
-        </a>
-    </div>
+    <a asp-action="Create" class="btn btn-success shadow-sm fw-bold px-4">
+        <i class="fas fa-plus me-2"></i>Yeni Numara Ekle
+    </a>
 </div>
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Hata',
-                text: '@TempData["ErrorMessage"]',
-                confirmButtonColor: '#10b981'
-            });
-        });
-    </script>
-}
 
 <div class="card stat-card border-0 shadow-sm">
     <div class="card-body p-0">
@@ -56,14 +35,9 @@
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a asp-action="Edit" asp-route-id="@phone.Id" asp-route-ruleId="@ruleId" asp-route-accountId="@accountId" class="btn btn-sm btn-warning shadow-sm me-1" title="Düzenle">
-                                        <i class="fas fa-pen"></i>
-                                    </a>
-
-                                    <form asp-action="Delete" asp-route-id="@phone.Id" asp-route-ruleId="@ruleId" asp-route-accountId="@accountId" method="post" class="d-inline delete-phone-form">
-                                        <button type="button" class="btn btn-sm btn-danger shadow-sm btn-delete-phone" title="Sil">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
+                                    <a asp-action="Edit" asp-route-id="@phone.Id" class="btn btn-sm btn-warning shadow-sm me-1"><i class="fas fa-pen"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@phone.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger shadow-sm"><i class="fas fa-trash-alt"></i></button>
                                     </form>
                                 </td>
                             </tr>
@@ -75,39 +49,8 @@
         else
         {
             <div class="text-center py-5">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                    <i class="fas fa-mobile-alt fs-1 text-muted"></i>
-                </div>
-                <h5 class="text-secondary fw-bold">Numara Bulunamadı</h5>
-                <p class="text-muted">Bu kural tetiklendiğinde SMS gönderilecek herhangi bir telefon numarası eklemediniz.</p>
-                <a asp-action="Create" asp-route-ruleId="@ruleId" asp-route-accountId="@accountId" class="btn btn-outline-success mt-2">İlk Numarayı Ekle</a>
+                <p class="text-muted">Rehberinizde henüz kayıtlı bir numara bulunmuyor.</p>
             </div>
         }
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('.btn-delete-phone').on('click', function(e) {
-                e.preventDefault();
-                var form = $(this).closest('form');
-
-                Swal.fire({
-                    title: 'Numara Silinecek!',
-                    text: "Bu telefon numarasını listeden çıkarmak istediğinize emin misiniz?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fas fa-trash me-1"></i> Evet, Sil!',
-                    cancelButtonText: 'İptal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-        });
-    </script>
-}

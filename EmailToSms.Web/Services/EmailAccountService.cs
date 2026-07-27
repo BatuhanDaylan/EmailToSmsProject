@@ -17,10 +17,12 @@ namespace EmailToSms.Web.Services
         {
             var response = await _httpClient.GetAsync("api/EmailAccounts");
 
-            //eğer başarısız olursa hata vermez boş liste döner
-            if (response.IsSuccessStatusCode) 
+            // eğer başarısız olursa hata vermez boş liste döner
+            if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<List<EmailAccountViewModel>>() ?? new List<EmailAccountViewModel>();
+                // DÜZELTME: Veriyi ApiResponse zarfıyla karşılıyoruz
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<EmailAccountViewModel>>>();
+                return apiResponse?.Data ?? new List<EmailAccountViewModel>();
             }
             return new List<EmailAccountViewModel>();
         }
@@ -32,14 +34,21 @@ namespace EmailToSms.Web.Services
             var apiPayload = new
             {
                 EmailAddress = model.EmailAddress,
-                TentantId = model.TenantId,
+                TenantId = model.TenantId,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret
             };
 
             //eklenen verileri apiye gönderme
             var response = await _httpClient.PostAsJsonAsync("api/EmailAccounts", apiPayload);
-            return response.IsSuccessStatusCode;
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"API Reddetme Detayı: {error}");
+            }
+
+            return true;
         }
 
         //veri düzenleyip apiye gönderme
@@ -49,13 +58,18 @@ namespace EmailToSms.Web.Services
             var apiPayload = new
             {
                 EmailAddress = model.EmailAddress,
-                TentantId = model.TenantId,
+                TenantId = model.TenantId,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret
             };
             //eklenen verileri apiye gönderme
             var response = await _httpClient.PutAsJsonAsync($"api/EmailAccounts/{id}", apiPayload);
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"API Reddetme Detayı: {error}");
+            }
+            return true;
         }
 
         //veri silme
@@ -72,7 +86,10 @@ namespace EmailToSms.Web.Services
             {
                 return new DashboardStatsViewModel(); // 0'larla dön
             }
-            return await response.Content.ReadFromJsonAsync<DashboardStatsViewModel>() ?? new DashboardStatsViewModel();
+
+            // DÜZELTME: Veriyi ApiResponse zarfıyla karşılıyoruz
+            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<DashboardStatsViewModel>>();
+            return apiResponse?.Data ?? new DashboardStatsViewModel();
         }
     }
 }

@@ -90,6 +90,9 @@
             <a asp-controller="EmailAccounts" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "EmailAccounts" ? "active" : "")">
                 <i class="fas fa-envelope-open-text me-3"></i>E-Posta Hesapları
             </a>
+            <a asp-controller="PhoneNumbers" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PhoneNumbers" ? "active" : "")">
+                <i class="fas fa-address-book me-3"></i>Telefon Rehberim
+            </a>
             <a asp-controller="Logs" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Logs" ? "active" : "")">
                 <i class="fas fa-history me-3"></i>İşlem Logları
             </a>

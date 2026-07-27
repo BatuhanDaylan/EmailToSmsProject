@@ -1,0 +1,143 @@
+﻿@model List<EmailToSms.Web.ViewModels.PhoneNumberViewModel>
+@{
+    ViewData["Title"] = "Kural Atamaları";
+    int ruleId = ViewBag.RuleId;
+    int accountId = ViewBag.AccountId;
+    var allNumbers = ViewBag.AllNumbers as List<EmailToSms.Web.ViewModels.PhoneNumberViewModel>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="text-secondary fw-bold mb-0"><i class="fas fa-link me-2 text-info"></i>Kurala Bağlı Numaralar</h3>
+        <p class="text-muted mb-0 small">Rehberinizdeki numaraları bu kurala bağlayın veya koparın.</p>
+    </div>
+    <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@accountId" class="btn btn-light shadow-sm fw-bold text-muted">
+        <i class="fas fa-arrow-left me-1"></i> Kurallara Dön
+    </a>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'İşlem Başarısız',
+                text: '@TempData["ErrorMessage"]',
+                confirmButtonColor: '#3b82f6'
+            });
+        });
+    </script>
+}
+
+<!-- NUMARA BAĞLAMA KARTI -->
+<div class="card stat-card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-bottom py-3">
+        <h5 class="mb-0 fw-bold text-info"><i class="fas fa-plug me-2"></i>Rehberden Numara Seç ve Bağla</h5>
+    </div>
+    <div class="card-body p-4">
+        <form asp-action="Assign" method="post" class="row g-3 align-items-end">
+            <input type="hidden" name="ruleId" value="@ruleId" />
+            <input type="hidden" name="accountId" value="@accountId" />
+
+            <div class="col-md-9">
+                <label class="form-label fw-bold text-secondary">Rehberinizdeki Numaralar</label>
+                <div class="input-group input-group-lg shadow-sm">
+                    <span class="input-group-text bg-light border-end-0 text-info"><i class="fas fa-address-book"></i></span>
+                    <select name="phoneNumberId" class="form-select border-start-0 fw-bold text-dark" required>
+                        <option value="">-- Kurala Bağlamak İçin Numara Seçin --</option>
+                        @if (allNumbers != null && allNumbers.Any())
+                        {
+                            foreach (var phone in allNumbers)
+                            {
+                                <option value="@phone.Id">@phone.PhoneNumber</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-info text-white btn-lg shadow-sm w-100 fw-bold">
+                    <i class="fas fa-link me-2"></i>Kurala Bağla
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MEVCUT BAĞLI NUMARALAR LİSTESİ -->
+<div class="card stat-card border-0 shadow-sm">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th class="ps-4">Bu Kural Tetiklendiğinde SMS Gidecek Numaralar</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var phone in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="badge bg-success bg-opacity-10 text-success border px-3 py-2 fs-6">
+                                        <i class="fas fa-phone-alt me-2"></i>@phone.PhoneNumber
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <form asp-action="Unassign" method="post" class="d-inline unassign-form">
+                                        <input type="hidden" name="ruleId" value="@ruleId" />
+                                        <input type="hidden" name="accountId" value="@accountId" />
+                                        <input type="hidden" name="phoneNumberId" value="@phone.Id" />
+                                        <button type="button" class="btn btn-sm btn-outline-danger shadow-sm fw-bold btn-unassign" title="Bağlantıyı Kopar">
+                                            <i class="fas fa-unlink me-1"></i> Kopar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-plug fs-1 text-muted"></i>
+                </div>
+                <h5 class="text-secondary fw-bold">Bağlı Numara Yok</h5>
+                <p class="text-muted">Bu kurala henüz hiçbir numara bağlanmamış. Yukarıdaki formdan rehberinizdeki bir numarayı seçerek bağlayabilirsiniz.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.btn-unassign').on('click', function(e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+
+                Swal.fire({
+                    title: 'Bağlantı Koparılacak!',
+                    text: "Bu numara artık bu kuraldan SMS almayacak. (Rehberinizden kalıcı olarak silinmez, sadece bu kuraldan çıkarılır.)",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-unlink me-1"></i> Evet, Kopar!',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

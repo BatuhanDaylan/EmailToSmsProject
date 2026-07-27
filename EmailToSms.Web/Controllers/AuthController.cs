@@ -53,21 +53,23 @@ namespace EmailToSms.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            //kurallaar kontrol edilir uymuyorsa hatalarla birlikte yollanır
+            // kurallar kontrol edilir uymuyorsa hatalarla birlikte yollanır
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var isSuccess = await _authService.RegisterAsync(model);
+            // DÜZELTME: Artık dönen sonucu ve mesajı birlikte alıyoruz
+            var result = await _authService.RegisterAsync(model);
 
-            if (isSuccess)
+            if (result.IsSuccess)
             {
-                //Kayıt başarılıysa kullanıcıyı doğrudan giriş yapması için Login sayfasına yönlendiriyoruz.
+                // Kayıt başarılıysa kullanıcıyı doğrudan giriş yapması için Login sayfasına yönlendiriyoruz.
                 return RedirectToAction("Login");
             }
 
-            ModelState.AddModelError(string.Empty, "Kayıt işlemi sırasında bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.");
+            // DÜZELTME: Sabit mesaj yerine API'den gelen GERÇEK mesajı ekrana basıyoruz
+            ModelState.AddModelError(string.Empty, result.ErrorMessage);
             return View(model);
         }
 

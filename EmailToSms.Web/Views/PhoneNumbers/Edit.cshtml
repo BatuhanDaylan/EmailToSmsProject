@@ -1,7 +1,6 @@
 ﻿@model EmailToSms.Web.ViewModels.PhoneNumberUpdateViewModel
 @{
     ViewData["Title"] = "Numarayı Güncelle";
-    int accountId = ViewBag.AccountId;
 }
 
 <div class="row justify-content-center">
@@ -13,8 +12,6 @@
             <div class="card-body p-4 p-md-5">
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="ForwardingRuleId" />
-                    <input type="hidden" name="accountId" value="@accountId" />
 
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small mb-4"></div>
 
@@ -30,7 +27,7 @@
                     <hr class="text-muted my-4" />
 
                     <div class="d-flex justify-content-end gap-3">
-                        <a asp-action="Index" asp-route-ruleId="@Model.ForwardingRuleId" asp-route-accountId="@accountId" class="btn btn-light px-4 shadow-sm fw-bold text-muted">İptal</a>
+                        <a asp-action="Index" class="btn btn-light px-4 shadow-sm fw-bold text-muted">İptal</a>
                         <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark">
                             <i class="fas fa-check-circle me-2"></i>Değişiklikleri Uygula
                         </button>
