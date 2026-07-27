@@ -4,19 +4,23 @@ using EmailToSms.Api.Models;
 using Microsoft.Graph.Models;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection; // EKLENDİ
 
 namespace EmailToSms.Api.Services
 {
     public class MicrosoftGraphEmailReader : IMicrosoftGraphEmailReader
     {
         private readonly ISmsService _smsService;
-        private readonly AuditLogService _auditLogService; // YENİ: Log servisini tanımladık
+        private readonly AuditLogService _auditLogService;
+        private readonly IDataProtector _protector; // EKLENDİ
 
-        // YENİ: Log servisini Constructor'a ekledik
-        public MicrosoftGraphEmailReader(ISmsService smsService, AuditLogService auditLogService)
+        // Constructor güncellendi
+        public MicrosoftGraphEmailReader(ISmsService smsService, AuditLogService auditLogService, IDataProtectionProvider provider)
         {
             _smsService = smsService;
             _auditLogService = auditLogService;
+            // Şifreyi çözerken Controller'da kullandığımız anahtar kelimenin BİREBİR AYNISINI kullanmalıyız
+            _protector = provider.CreateProtector("EmailToSms.MicrosoftGraph.Secret");
         }
 
         //Yazdığımız bu method sayesinde email mesajlarının göndericisi, konusu ve içeriği ile ilgili kuralları kontrol ediyoruz
@@ -47,13 +51,15 @@ namespace EmailToSms.Api.Services
 
         public async Task ReadEmailAndProcessAsync(EmailAccount account)
         {
-            //Azure portal üzerinden uygulama kaydı oluşturulduktan sonra Graph API'ye erişim sağlamak için gerekli olan anahtarı alan bir nesne oluşturuyoruz
-            var credential = new ClientSecretCredential(account.TenantId, account.ClientId, account.ClientSecret);
-            //Graph API ile iletişim kurmak için GraphServiceClient sınıfını kullanıyoruz Microsoft Graph API'sine erişim sağlamak için gerekli olan kimlik doğrulama bilgilerini alır ve API çağrılarını yapmamıza olanak tanır
-            var graphClient = new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" });
-
             try
             {
+                // DÜZELTME: Veritabanındaki şifrelenmiş metni gerçek şifreye dönüştürüyoruz
+                var plainSecret = _protector.Unprotect(account.ClientSecret);
+
+                // Microsoft'a bağlanırken çözülmüş gerçek şifreyi veriyoruz
+                var credential = new ClientSecretCredential(account.TenantId, account.ClientId, plainSecret);
+                var graphClient = new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" });
+
                 //graph apinin anlayabilmesi için tarihi ISO 8601 formatında alıp tek tırnak içine sarıyoruz
                 // Tarihi alıyoruz (Microsoft Graph tarihi tırnaksız bekler)
                 // Utc zaman diliminde olduğundan emin olmak için evrensel formata (Z) çeviriyoruz

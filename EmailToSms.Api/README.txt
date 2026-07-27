@@ -73,6 +73,9 @@ AuditLogControllerımız tüm kullanıcıların loglarını getiriyordu şimdi s
 Refactoring işlemleri başlatıldı
 EmailCheckerWorkerda döngünün içindeki işlemleri kendi try-catch bloğuna aldık. Böylece bir hesap hata alsa bile döngü çalışmaya devam eder
 MicrosoftGraphEmailReaderd bellek dostu ve profesyonel standart olan StringComparison.OrdinalIgnoreCase yapısına geçildi ve null kontrolleri ?? string.Empty ile daha güvenli hale getirildi
+Program.cs içerisine DataProrotection eklendi
+EmailAccountsController içerisine ekleme ve güncelleme methodu içerisindeci clientsecret değeri veritabanına yollanmadan önce şifreleyecek kod eklendi
+MicrosoftGraphEmailReader Worker mailleri okumak için Microsoft'a bağlanacağı zaman veritabanından gelen bu kriptolu metni Microsoft Graph ın anlayabileceği düz metne çevirmelidir kodlar buna göre güncellendi
 
 
 

@@ -6,17 +6,22 @@ using EmailToSms.Api.Models;
 using EmailToSms.Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using EmailToSms.Api.Common;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace EmailToSms.Api.Controllers
 {
     [Authorize]
     public class EmailAccountsController : CustomBaseController
     {
-
         private readonly EmailToSmsDbContext _context;
-        public EmailAccountsController(EmailToSmsDbContext context)
+        private readonly IDataProtector _protector; // EKLENDİ
+
+        // Constructor güncellendi
+        public EmailAccountsController(EmailToSmsDbContext context, IDataProtectionProvider provider)
         {
             _context = context;
+            // Şifreleme ve çözme işlemleri için benzersiz bir anahtar kelime belirliyoruz
+            _protector = provider.CreateProtector("EmailToSms.MicrosoftGraph.Secret");
         }
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -43,7 +48,8 @@ namespace EmailToSms.Api.Controllers
                 EmailAddress = dto.EmailAddress,
                 TenantId = dto.TenantId,
                 ClientId = dto.ClientId,
-                ClientSecret = dto.ClientSecret,
+                // DÜZELTME: Kullanıcının girdiği şifreyi kriptolayarak kaydediyoruz
+                ClientSecret = _protector.Protect(dto.ClientSecret),
                 LastCheckedAt = DateTime.UtcNow
             };
 
@@ -96,7 +102,8 @@ namespace EmailToSms.Api.Controllers
             account.EmailAddress = dto.EmailAddress;
             account.TenantId = dto.TenantId;
             account.ClientId = dto.ClientId;
-            account.ClientSecret = dto.ClientSecret;
+            // DÜZELTME: Güncelleme işleminde de yeni şifreyi kriptolayarak kaydediyoruz
+            account.ClientSecret = _protector.Protect(dto.ClientSecret);
 
             //değişiklikleri veritabanına kaydediyoruz
             await _context.SaveChangesAsync();
