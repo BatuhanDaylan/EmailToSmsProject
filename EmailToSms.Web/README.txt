@@ -60,6 +60,7 @@ Telefon rehberi sayfasında çöp kutusuna basıldığı an numara siliniyor art
 Telefon rehberindeki hatayı ekrana verecek script yazıldı
 Rehber sayfasının boş halinin tasarımı düzenlendi
 Email içerisindeyken layoutta gösterirken kurallara basıldığında layoutta göstemiyordu gösterecek şekilfe düzenlendi
+İşlem loglarındaki saatleri türkiye saatine çevirecek kodlar yazıldı
 
 
 
