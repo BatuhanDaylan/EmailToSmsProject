@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using EmailToSms.Api.Common;
+using EmailToSms.Api.DTOs;
+using EmailToSms.Api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using EmailToSms.Api.Models;
-using EmailToSms.Api.DTOs;
-using EmailToSms.Api.Common;
 
 namespace EmailToSms.Api.Controllers
 {
@@ -50,6 +51,7 @@ namespace EmailToSms.Api.Controllers
 
         //giriş yapma işlemleri
         [HttpPost("login")]
+        [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

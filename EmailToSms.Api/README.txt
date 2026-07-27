@@ -76,8 +76,11 @@ MicrosoftGraphEmailReaderd bellek dostu ve profesyonel standart olan StringCompa
 Program.cs içerisine DataProrotection eklendi
 EmailAccountsController içerisine ekleme ve güncelleme methodu içerisindeci clientsecret değeri veritabanına yollanmadan önce şifreleyecek kod eklendi
 MicrosoftGraphEmailReader Worker mailleri okumak için Microsoft'a bağlanacağı zaman veritabanından gelen bu kriptolu metni Microsoft Graph ın anlayabileceği düz metne çevirmelidir kodlar buna göre güncellendi
-
-
+API projesindeki Program.cs içine en üst kısma Rate Limiting kütüphanesini eklendi ve servislerin tanımlandığı bölüme kural yazıldı
+UseRateLimiter eklendi
+Kural login methoduna uygulandı
+Artık biri beş kez üst üste giriş yapmaya çalışırsa kural bir dakika boyunca o IP adresinden gelen verileri almayacaktır
+appsettings içerisindeki bilgiler gizliye alındı
 
 
 

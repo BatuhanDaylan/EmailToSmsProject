@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.RateLimiting;
 using EmailToSms.Api.Data;
 using EmailToSms.Api.Middlewares;
 using EmailToSms.Api.Models;
@@ -25,6 +26,26 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services.AddRateLimiter(options =>
+{
+    // "LoginPolicy" adında bir kural tanımlıyoruz
+    options.AddFixedWindowLimiter("LoginPolicy", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1); // 1 dakikalık zaman dilimi
+        opt.PermitLimit = 5; // Maksimum 5 istek 
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0; // Sınır aşılırsa kuyruğa almadan direkt HTTP 429  döndür
+    });
+
+    // Sınır aşıldığında verilecek yanıtı özelleştirebilirsin
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsync("{\"isSuccess\":false, \"message\":\"Çok fazla giriş denemesi yaptınız. Lütfen 1 dakika bekleyip tekrar deneyin.\"}");
+    };
+});
 
 builder.Services.AddDataProtection();
 
@@ -114,6 +135,8 @@ app.UseCors("AllowWebApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 
