@@ -36,14 +36,20 @@ builder.Services.AddHttpClient("ApiClient", client =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+//Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
+    //Sadece senin bilgisayarında (geliştirme ortamında) detaylı hata göstersin
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    //Canlı ortamda (Production) son kullanıcıya standart hata sayfası göster
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-//hatayı bulmak için geçici
-app.UseDeveloperExceptionPage();
+
+app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

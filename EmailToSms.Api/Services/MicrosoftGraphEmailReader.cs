@@ -26,20 +26,22 @@ namespace EmailToSms.Api.Services
 
             if (!string.IsNullOrWhiteSpace(rule.SenderKeyword))
             {
-                var sender = emailMessage.From?.EmailAddress?.Address?.ToLower() ?? "";
-                if (!sender.Contains(rule.SenderKeyword.ToLower())) matches = false;
+                var sender = emailMessage.From?.EmailAddress?.Address ?? string.Empty;
+                if (!sender.Contains(rule.SenderKeyword, StringComparison.OrdinalIgnoreCase)) matches = false;
             }
+
             if (!string.IsNullOrWhiteSpace(rule.SubjectKeyword))
             {
-                var subject = emailMessage.Subject?.ToLower() ?? "";
-                if (!subject.Contains(rule.SubjectKeyword.ToLower())) matches = false;
+                var subject = emailMessage.Subject ?? string.Empty;
+                if (!subject.Contains(rule.SubjectKeyword, StringComparison.OrdinalIgnoreCase)) matches = false;
             }
 
             if (!string.IsNullOrWhiteSpace(rule.BodyKeyword))
             {
-                var body = emailMessage.BodyPreview?.ToLower() ?? "";
-                if (!body.Contains(rule.BodyKeyword.ToLower())) matches = false;
+                var body = emailMessage.BodyPreview ?? string.Empty;
+                if (!body.Contains(rule.BodyKeyword, StringComparison.OrdinalIgnoreCase)) matches = false;
             }
+
             return matches;
         }
 

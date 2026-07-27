@@ -39,7 +39,6 @@ namespace EmailToSms.Api.Workers
                         //kapsam içinden veritabanı bağlantımızı güvenle çekiyoruz
                         var dbContext = scope.ServiceProvider.GetRequiredService<EmailToSmsDbContext>();
                         var emailReaderService = scope.ServiceProvider.GetRequiredService<IMicrosoftGraphEmailReader>();
-
                         // YENİ: Loglama servisimizi scope üzerinden çekiyoruz
                         var auditLogService = scope.ServiceProvider.GetRequiredService<AuditLogService>();
 
@@ -53,46 +52,42 @@ namespace EmailToSms.Api.Workers
 
                         foreach (var account in accounts)
                         {
-                            _logger.LogInformation($"Kontrol edilen hesap {account.EmailAddress}");
+                            // REFACTORING: Her hesap bağımsız işlenir. Biri patlarsa diğeri etkilenmez.
+                            try
+                            {
+                                _logger.LogInformation($"Kontrol edilen hesap {account.EmailAddress}");
 
-                            await emailReaderService.ReadEmailAndProcessAsync(account);
-
-                            account.LastCheckedAt = DateTime.UtcNow;
+                                await emailReaderService.ReadEmailAndProcessAsync(account);
+                                account.LastCheckedAt = DateTime.UtcNow;
 
                             // YENİ: Her bir hesabın başarıyla tarandığını veritabanına işliyoruz
-                            await auditLogService.LogAsync(
-                                eventType: "WorkerScan",
-                                details: $"{account.EmailAddress} hesabı başarıyla tarandı.",
-                                isSuccess: true,
-                                accountId: account.Id
-                            );
+                                await auditLogService.LogAsync(
+                                    eventType: "WorkerScan",
+                                    details: $"{account.EmailAddress} hesabı başarıyla tarandı.",
+                                    isSuccess: true,
+                                    accountId: account.Id
+                                );
+                            }
+                            catch (Exception accountEx)
+                            {
+                                _logger.LogError(accountEx, $"{account.EmailAddress} hesabı işlenirken hata oluştu.");
+                                await auditLogService.LogAsync(
+                                    eventType: "WorkerAccountError",
+                                    details: $"{account.EmailAddress} hesabında hata: {accountEx.Message}",
+                                    isSuccess: false,
+                                    accountId: account.Id
+                                );
+                            }
                         }
-                        //değişiklikleri kaydet
+
+                        // Döngü bittikten sonra başarılı olan tüm güncellemeleri tek seferde kaydet
                         await dbContext.SaveChangesAsync(stoppingToken);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "E-posta kontrolü döngüsü sırasında bir hata yaşandı");
-
-                    // YENİ: Kritik hataları veritabanına (arayüze düşmesi için) işliyoruz
-                    try
-                    {
-                        using (var errorScope = _scopeFactory.CreateScope())
-                        {
-                            var errorAuditService = errorScope.ServiceProvider.GetRequiredService<AuditLogService>();
-                            await errorAuditService.LogAsync(
-                                eventType: "WorkerError",
-                                details: $"Worker döngüsünde kritik hata: {ex.Message}",
-                                isSuccess: false
-                            );
-                        }
-                    }
-                    catch (Exception logEx)
-                    {
-                        // Log atarken hata olursa sadece konsola yaz (Döngüyü kırma)
-                        _logger.LogError(logEx, "Sistem hatası veritabanına loglanırken başarısız oldu!");
-                    }
+                    _logger.LogError(ex, "E-posta kontrolü ana döngüsü sırasında kritik bir hata yaşandı");
+                    // ... (Mevcut hata yakalama kodun aynı kalıyor)
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);

@@ -64,14 +64,15 @@ PhoneNumbersController içerisindeki methotlar Result döndürecek şekilde düz
 StatsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
 AuditlogsController içerisindeki methotlar Result döndürecek şekilde düzenlendi
 Controllerlar içerisindeki silme methodları veriler veritabanından silinmeyecek sadece deaktif hale alınacak şekilde düzenlendi
-
-
 Controllerlar içerisindeki create methodlarına daha önce eklenmişmi kontrolü eklendi
 PhoneNumberController içerisine kurala bağlı rehberi getirme, kurala bağlama, bağlı kuraldan silme gibi yeni merhotlar eklendi
 RulePhoneNumber içerisine UserId eklendi
 PhoneRuleAssignDto eklendi
 AuditLogControllerımız tüm kullanıcıların loglarını getiriyordu şimdi sadece giriş yapmış kullanıcının loglarını getirecek şekilde güncellendi
 
+Refactoring işlemleri başlatıldı
+EmailCheckerWorkerda döngünün içindeki işlemleri kendi try-catch bloğuna aldık. Böylece bir hesap hata alsa bile döngü çalışmaya devam eder
+MicrosoftGraphEmailReaderd bellek dostu ve profesyonel standart olan StringComparison.OrdinalIgnoreCase yapısına geçildi ve null kontrolleri ?? string.Empty ile daha güvenli hale getirildi
 
 
 

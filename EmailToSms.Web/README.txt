@@ -45,7 +45,6 @@ Arayüzler profesyonelce yenilendi
 Girilen mail sayısını kural sayısını ve şu ana kadar yollanan mesaj sayısını ana ekranda gösteren arayüz eklendi
 Log kayıtlarını mesaj olarak ekrana vermek için arayüz veritabanında tutmak için model eklendi
 Arayüzlerdeki ve api kısmındaki hatalar düzeltildi yeniden yazıldı
-
 Api tarafındaki düzenlemelere uygun DTOlar yazıldı ve mevcut DTOlar düzenlendi
 PhoneNumberService içerisindeki kodlar düzenlendi
 PhoneNumbersController içerisine yeni methodların kodları eklendi kurallarla numaralar arasındaki bağımlılık kaldırıldığı için eski kodlar düzenlendi
@@ -55,6 +54,8 @@ AuthService register methodu bir hata olduğunda hatanın direkt ne olduğunu d�
 AuthController yeni kodlara göre düzenlendi
 AuthService içerisindeki login methodu düzenlendi
 Api tarafını result pattern mimarisine geçirdiğimiz için servislerimiz gelen veriyi okuyamıyor bu nedenle servislerimiz içerisindeki kodları güncelliyoruz
+
+AuthService eğer API tarafında bir çökme olursa ve JSON yerine HTML dönerse sistemin hata fırlatmasını önlemek için System.Text.Json.JsonException kontrolü eklendi
 
 
 

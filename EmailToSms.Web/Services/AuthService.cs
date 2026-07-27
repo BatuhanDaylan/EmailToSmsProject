@@ -51,21 +51,28 @@ namespace EmailToSms.Web.Services
             //API işlemi reddettiyse, gönderdiği asıl hata mesajını okumaya çalışıyoruz
             try
             {
+                // REFACTORING: API'den gelen verinin null olma durumlarına karşı güvenli okuma
                 var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
-                string errorMessage = apiResponse?.Message ?? "Bilinmeyen bir hata oluştu.";
 
-                // Eğer API'nin ErrorDetail alanı doluysa (Identity hataları genelde oraya düşer)
-                if (!string.IsNullOrEmpty(apiResponse?.ErrorDetails))
+                if (apiResponse != null)
                 {
-                    errorMessage = apiResponse.ErrorDetails;
+                    string errorMessage = !string.IsNullOrEmpty(apiResponse.ErrorDetails)
+                        ? apiResponse.ErrorDetails
+                        : (apiResponse.Message ?? "Bilinmeyen bir hata oluştu.");
+
+                    return (false, errorMessage);
                 }
 
-                return (false, errorMessage);
+                return (false, "Sunucudan boş yanıt alındı.");
             }
-            catch
+            catch (System.Text.Json.JsonException) // REFACTORING: Sadece JSON parse hatalarını yakala
             {
-                //Eğer Result Pattern parse edilemezse varsayılan bir uyarı ver
-                return (false, "Kayıt reddedildi. Şifrenizin büyük harf, küçük harf, rakam ve özel karakter (*, !, ?) içerdiğinden emin olun.");
+                // API JSON yerine düz metin veya HTML dönerse patlamaması için
+                return (false, "Sunucu ile iletişimde format hatası oluştu. Lütfen tekrar deneyin.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Beklenmeyen bir hata oluştu: {ex.Message}");
             }
         }
 
