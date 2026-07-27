@@ -87,7 +87,7 @@
             <a asp-controller="Home" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
                 <i class="fas fa-chart-line me-3"></i>Genel Bakış
             </a>
-            <a asp-controller="EmailAccounts" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "EmailAccounts" ? "active" : "")">
+            <a asp-controller="EmailAccounts" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "EmailAccounts" || ViewContext.RouteData.Values["Controller"]?.ToString() == "ForwardingRules" ? "active" : "")">
                 <i class="fas fa-envelope-open-text me-3"></i>E-Posta Hesapları
             </a>
             <a asp-controller="PhoneNumbers" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PhoneNumbers" ? "active" : "")">
