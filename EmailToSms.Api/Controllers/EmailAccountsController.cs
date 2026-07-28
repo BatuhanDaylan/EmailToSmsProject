@@ -1,12 +1,13 @@
-﻿using EmailToSms.Api.Data;
+﻿using EmailToSms.Api.Common;
+using EmailToSms.Api.Data;
+using EmailToSms.Api.DTOs;
+using EmailToSms.Api.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using EmailToSms.Api.Models;
-using EmailToSms.Api.DTOs;
-using Microsoft.AspNetCore.Authorization;
-using EmailToSms.Api.Common;
-using Microsoft.AspNetCore.DataProtection;
+using System.Security.Principal;
 
 namespace EmailToSms.Api.Controllers
 {
@@ -29,10 +30,10 @@ namespace EmailToSms.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAccount([FromBody] EmailAccountCreateDto dto)
         {
-            //kullanıcının ıdsini çekiyoruz
+            // Kullanıcının ID'sini çekiyoruz
             var userId = GetUserId();
 
-            //Bu kullanıcı bu maili daha önce eklemiş mi (Silinenler hariç)
+            // Bu kullanıcı bu maili daha önce eklemiş mi (Silinenler hariç)
             var isEmailExists = await _context.EmailAccounts
                 .AnyAsync(e => e.UserId == userId && e.EmailAddress == dto.EmailAddress && !e.IsDeleted);
 
@@ -41,19 +42,19 @@ namespace EmailToSms.Api.Controllers
                 return CreateActionResult(Result.Failure("Kayıt başarısız.", "Bu e-posta adresi zaten hesabınıza ekli.", 409));
             }
 
-            //girilen mail adresinin bilgilerini kaydediyoruz
+            // Girilen mail adresinin bilgilerini hazırlıyoruz
             var newAccount = new EmailAccount
             {
                 UserId = userId,
                 EmailAddress = dto.EmailAddress,
                 TenantId = dto.TenantId,
                 ClientId = dto.ClientId,
-                // DÜZELTME: Kullanıcının girdiği şifreyi kriptolayarak kaydediyoruz
+                // Kullanıcının girdiği şifreyi kriptolayarak kaydediyoruz
                 ClientSecret = _protector.Protect(dto.ClientSecret),
                 LastCheckedAt = DateTime.UtcNow
             };
 
-            //bilgileri databaseimize ekleyip kaydediyoruz
+            // Bilgileri veritabanımıza ekleyip kaydediyoruz
             _context.EmailAccounts.Add(newAccount);
             await _context.SaveChangesAsync();
 

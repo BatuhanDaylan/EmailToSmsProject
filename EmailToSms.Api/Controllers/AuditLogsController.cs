@@ -1,38 +1,33 @@
-﻿using EmailToSms.Api.Data;
+﻿using EmailToSms.Api.Common;
+using EmailToSms.Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using EmailToSms.Api.Common;
-using EmailToSms.Api.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace EmailToSms.Api.Controllers
 {
     // Giriş yapmayı zorunlu kıldık
     [Authorize]
+    [Route("api/[controller]")] // Route eksikti, ekledim.
     public class AuditLogsController : CustomBaseController
     {
-        private readonly EmailToSmsDbContext _context;
+        // Artık DbContext yerine doğrudan senin servisini kullanıyoruz
+        private readonly AuditLogService _auditLogService;
 
-        public AuditLogsController(EmailToSmsDbContext context)
+        public AuditLogsController(AuditLogService auditLogService)
         {
-            _context = context;
+            _auditLogService = auditLogService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetLogs()
+        public async Task<IActionResult> GetLogs([FromQuery] int page = 1)
         {
-            //adece bu kullanıcıya ait hesapların loglarını getiriyoruz
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            int pageSize = 20; // Bir sayfada kaç kayıt olacak
 
-            var logs = await _context.AuditLogs
-                .Include(l => l.EmailAccount) //E-Posta hesabı ilişkisini dahil et
-                .Where(l => l.EmailAccount != null && l.EmailAccount.UserId == userId)
-                .OrderByDescending(l => l.CreatedAt)
-                .Take(100)
-                .ToListAsync();
+            // Tüm yükü servise devrettik
+            var result = await _auditLogService.GetPaginatedLogsAsync(page, pageSize);
 
-            return CreateActionResult(ResultOfT<List<AuditLog>>.Success(logs, "Log kayıtları listelendi."));
+            return CreateActionResult(result);
         }
     }
 }

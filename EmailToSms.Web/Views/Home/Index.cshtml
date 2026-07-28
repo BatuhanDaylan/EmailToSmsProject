@@ -73,6 +73,7 @@
 @{
     var recentLogs = ViewBag.RecentLogs as List<EmailToSms.Web.ViewModels.AuditLogViewModel>;
 }
+
 <div class="card border-0 shadow-sm stat-card mt-4">
     <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-bolt me-2 text-warning"></i>Sistem İşlem Logları</h5>
@@ -80,13 +81,14 @@
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0" style="table-layout: fixed;">
                 <thead class="table-light text-muted small">
                     <tr>
-                        <th class="ps-4 py-3">Tarih / Saat</th>
-                        <th>Olay Tipi</th>
+                        <!-- Genişlik 230px yapıldı -->
+                        <th class="ps-4 py-3" style="width: 230px;">Tarih / Saat</th>
+                        <th style="width: 150px;">Olay Tipi</th>
                         <th>Detay Açıklama</th>
-                        <th class="text-end pe-4">Durum</th>
+                        <th class="text-end pe-4" style="width: 100px;">Durum</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,7 +96,6 @@
                     {
                         foreach (var log in recentLogs)
                         {
-                            // Türkiye saatine çevirme işlemi
                             var timezoneId = string.Empty;
                             try { timezoneId = "Turkey Standard Time"; var tz = TimeZoneInfo.FindSystemTimeZoneById(timezoneId); }
                             catch { timezoneId = "Europe/Istanbul"; }
@@ -102,7 +103,7 @@
                             var turkeyTime = TimeZoneInfo.ConvertTimeFromUtc(log.CreatedAt, TimeZoneInfo.FindSystemTimeZoneById(timezoneId));
 
                             <tr>
-                                <td class="ps-4 text-muted fw-bold">
+                                <td class="ps-4 text-muted fw-bold text-nowrap">
                                     <i class="far fa-clock me-1 text-secondary"></i> @turkeyTime.ToString("dd.MM.yyyy HH:mm:ss")
                                 </td>
                                 <td>
@@ -110,7 +111,13 @@
                                         @log.EventType
                                     </span>
                                 </td>
-                                <td class="small text-dark">@log.Details</td>
+                                <!-- Tıklandığında açılıp kapanan mesaj hücresi -->
+                                <td class="small text-dark text-truncate"
+                                    style="max-width: 1px; cursor: pointer; transition: all 0.3s ease;"
+                                    title="Genişletmek / daraltmak için tıklayın"
+                                    onclick="this.classList.toggle('text-truncate');">
+                                    @log.Details
+                                </td>
                                 <td class="text-end pe-4">
                                     @if (log.IsSuccess)
                                     {
