@@ -54,13 +54,15 @@ AuthService register methodu bir hata olduğunda hatanın direkt ne olduğunu d�
 AuthController yeni kodlara göre düzenlendi
 AuthService içerisindeki login methodu düzenlendi
 Api tarafını result pattern mimarisine geçirdiğimiz için servislerimiz gelen veriyi okuyamıyor bu nedenle servislerimiz içerisindeki kodları güncelliyoruz
-
 AuthService eğer API tarafında bir çökme olursa ve JSON yerine HTML dönerse sistemin hata fırlatmasını önlemek için System.Text.Json.JsonException kontrolü eklendi
 Telefon rehberi sayfasında çöp kutusuna basıldığı an numara siliniyor artık eminmisiniz uyarısı fırlatacak
 Telefon rehberindeki hatayı ekrana verecek script yazıldı
 Rehber sayfasının boş halinin tasarımı düzenlendi
 Email içerisindeyken layoutta gösterirken kurallara basıldığında layoutta göstemiyordu gösterecek şekilfe düzenlendi
 İşlem loglarındaki saatleri türkiye saatine çevirecek kodlar yazıldı
+
+EmailAccountService içerisine kullanıcının isteğinini api tarafına yollayacak method yazıldı
+EmailAccountsController içerisine arayüzden gelen servisi karşılayacak method yazıldı
 
 
 

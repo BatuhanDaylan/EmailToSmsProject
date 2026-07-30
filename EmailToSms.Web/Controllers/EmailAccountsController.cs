@@ -112,6 +112,25 @@ namespace EmailToSms.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            try
+            {
+                var isSuccess = await _emailAccountService.ToggleAccountStatusAsync(id);
+                if (!isSuccess)
+                {
+                    return Content("HATA: Hesap durumu değiştirilemedi.");
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return Content($"DURUM DEĞİŞTİRME HATASI: {ex.Message}");
+            }
+        }
+
         //hesap silme işlemi
         [HttpPost]
         public async Task<IActionResult> Delete(int id)

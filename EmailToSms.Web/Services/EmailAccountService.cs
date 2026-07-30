@@ -72,6 +72,12 @@ namespace EmailToSms.Web.Services
             return true;
         }
 
+        public async Task<bool> ToggleAccountStatusAsync(int id)
+        {
+            var response = await _httpClient.PatchAsync($"api/EmailAccounts/{id}/toggle-status", null);
+            return response.IsSuccessStatusCode;
+        }
+
         //veri silme
         public async Task<bool> DeleteAccountAsync(int id)
         {

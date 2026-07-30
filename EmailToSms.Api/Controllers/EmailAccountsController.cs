@@ -76,7 +76,8 @@ namespace EmailToSms.Api.Controllers
                 {
                     Id = e.Id,
                     EmailAddress = e.EmailAddress,
-                    LastChecked = e.LastCheckedAt
+                    LastChecked = e.LastCheckedAt,
+                    IsActive = e.IsActive
                 })
                 .ToListAsync();
 
@@ -109,6 +110,26 @@ namespace EmailToSms.Api.Controllers
             //değişiklikleri veritabanına kaydediyoruz
             await _context.SaveChangesAsync();
             return CreateActionResult(Result.Success("E-Posta hesabı bilgileri başarıyla güncellendi."));
+        }
+
+        [HttpPatch("{id}/toggle-status")]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            var userId = GetUserId();
+            var account = await _context.EmailAccounts
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId && !e.IsDeleted);
+
+            if (account == null)
+            {
+                return CreateActionResult(Result.Failure("Hesap bulunamadı.", "E-Posta bulunamadı veya yetkiniz yok.", 404));
+            }
+
+            account.IsActive = !account.IsActive;
+            await _context.SaveChangesAsync();
+
+            var statusText = account.IsActive ? "aktif" : "pasif";
+            return CreateActionResult(Result.Success($"E-posta hesabı başarıyla {statusText} duruma getirildi."));
+
         }
 
 

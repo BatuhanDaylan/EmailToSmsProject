@@ -69,10 +69,9 @@ PhoneNumberController içerisine kurala bağlı rehberi getirme, kurala bağlama
 RulePhoneNumber içerisine UserId eklendi
 PhoneRuleAssignDto eklendi
 AuditLogControllerımız tüm kullanıcıların loglarını getiriyordu şimdi sadece giriş yapmış kullanıcının loglarını getirecek şekilde güncellendi
-
 Refactoring işlemleri başlatıldı
 EmailCheckerWorkerda döngünün içindeki işlemleri kendi try-catch bloğuna aldık. Böylece bir hesap hata alsa bile döngü çalışmaya devam eder
-MicrosoftGraphEmailReaderd bellek dostu ve profesyonel standart olan StringComparison.OrdinalIgnoreCase yapısına geçildi ve null kontrolleri ?? string.Empty ile daha güvenli hale getirildi
+MicrosoftGraphEmailReaderda bellek dostu ve profesyonel standart olan StringComparison.OrdinalIgnoreCase yapısına geçildi ve null kontrolleri ?? string.Empty ile daha güvenli hale getirildi
 Program.cs içerisine DataProrotection eklendi
 EmailAccountsController içerisine ekleme ve güncelleme methodu içerisindeci clientsecret değeri veritabanına yollanmadan önce şifreleyecek kod eklendi
 MicrosoftGraphEmailReader Worker mailleri okumak için Microsoft'a bağlanacağı zaman veritabanından gelen bu kriptolu metni Microsoft Graph ın anlayabileceği düz metne çevirmelidir kodlar buna göre güncellendi
@@ -82,6 +81,9 @@ Kural login methoduna uygulandı
 Artık biri beş kez üst üste giriş yapmaya çalışırsa kural bir dakika boyunca o IP adresinden gelen verileri almayacaktır
 appsettings içerisindeki bilgiler gizliye alındı
 
+EmailAccountsController içerisine dinlenen mail hesabını aktif veya pasif yapacak methon eklendi
+Mail pasife alınsa bile worker çalışmaya devam ediyordu worker güncellendi mail sadece aktifse maili okuyacak
+Telefon numarası eklenirken ve güncellenirken uygun formattamı kontrol edilmesi için ilgili DTO lar güncellendi
 
 
 

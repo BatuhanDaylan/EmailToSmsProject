@@ -24,6 +24,7 @@
                             <th class="ps-4">ID</th>
                             <th>E-Posta Adresi</th>
                             <th>Son Kontrol (Senkronizasyon)</th>
+                            <th>Durum</th>
                             <th class="text-end pe-4">İşlemler</th>
                         </tr>
                     </thead>
@@ -39,10 +40,32 @@
                                 </td>
                                 <td>
                                     <small class="text-muted fw-bold">
-                                        <i class="far fa-clock me-1 text-warning"></i> @account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                        <i class="far fa-clock me-1 text-warning"></i>
+                                        @(account.LastChecked == DateTime.MinValue ? "Henüz Taranmadı" : account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
                                     </small>
                                 </td>
+                                <td>
+                                    @if (account.IsActive)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i> Aktif
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border px-3 py-2">
+                                            <i class="fas fa-pause-circle me-1"></i> Pasif
+                                        </span>
+                                    }
+                                </td>
                                 <td class="text-end pe-4">
+                                    <!-- Aktif / Pasif Yap Butonu -->
+                                    <form asp-action="ToggleStatus" asp-route-id="@account.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm @(account.IsActive ? "btn-secondary" : "btn-success") shadow-sm me-1" title="@(account.IsActive ? "Pasife Al" : "Aktife Al")">
+                                            <i class="fas @(account.IsActive ? "fa-pause" : "fa-play") text-white"></i>
+                                        </button>
+                                    </form>
+
                                     <!-- Kurallar Butonu -->
                                     <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@account.Id" class="btn btn-sm btn-info text-white shadow-sm me-1" title="Kural Motoru">
                                         <i class="fas fa-filter"></i> Kurallar
@@ -50,7 +73,7 @@
 
                                     <!-- Düzenle Butonu -->
                                     <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-sm btn-warning shadow-sm me-1" title="Düzenle">
-                                        <i class="fas fa-pen"></i>
+                                        <i class="fas fa-pen text-white"></i>
                                     </a>
 
                                     <!-- Sil Butonu (SweetAlert Entegreli Form) -->

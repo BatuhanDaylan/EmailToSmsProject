@@ -46,6 +46,7 @@ namespace EmailToSms.Api.Workers
                         var accounts = await dbContext.EmailAccounts
                             .Include(e => e.Rules)
                             .ThenInclude(r => r.TargetPhoneNumbers)
+                            .Where(e => e.IsActive)
                             .ToListAsync(stoppingToken);
 
                         _logger.LogInformation($"Sistemde kayıtlı toplam {accounts.Count} e-posta hesabı bulundu");
