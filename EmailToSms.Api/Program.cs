@@ -59,7 +59,8 @@ builder.Services.AddIdentity<EmailToSmsUser, IdentityRole>()
     .AddEntityFrameworkStores<EmailToSmsIdentityDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<ISmsService, SmsService>();
+//HttpClient'ı ISmsService için CompanySmsService ile bağlayarak içeriye enjekte ediyoruz
+builder.Services.AddHttpClient<ISmsService, CompanySmsService>();
 builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<IMicrosoftGraphEmailReader, MicrosoftGraphEmailReader>();
 

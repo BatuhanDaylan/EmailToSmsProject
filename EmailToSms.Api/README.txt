@@ -80,13 +80,12 @@ UseRateLimiter eklendi
 Kural login methoduna uygulandı
 Artık biri beş kez üst üste giriş yapmaya çalışırsa kural bir dakika boyunca o IP adresinden gelen verileri almayacaktır
 appsettings içerisindeki bilgiler gizliye alındı
-
 EmailAccountsController içerisine dinlenen mail hesabını aktif veya pasif yapacak methon eklendi
 Mail pasife alınsa bile worker çalışmaya devam ediyordu worker güncellendi mail sadece aktifse maili okuyacak
 Telefon numarası eklenirken ve güncellenirken uygun formattamı kontrol edilmesi için ilgili DTO lar güncellendi
 
-
-
+Service içerisindeki kullanılmayan MockSmsService kaldırıldı
+Şirketin sms servisine bağlanıp sms atacak CompanySmsService servis yazıldı 
 
 
 
