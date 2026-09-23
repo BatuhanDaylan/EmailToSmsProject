@@ -3,55 +3,44 @@
     ViewData["Title"] = "Yeni Kural Ekle";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card stat-card border-0 shadow-sm mt-3">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-bold text-info"><i class="fas fa-magic me-2"></i>Yeni Filtre Kuralı Oluştur</h5>
-            </div>
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-7">
+        <div class="card stat-card border-0">
             <div class="card-body p-4 p-md-5">
-                <div class="alert alert-info bg-info bg-opacity-10 border-0 mb-4 d-flex align-items-center" role="alert">
-                    <i class="fas fa-lightbulb fs-4 text-info me-3"></i>
-                    <div class="small text-secondary">
-                        <strong>İpucu:</strong> Tüm alanları doldurmak zorunda değilsiniz. Sadece filtrelemek istediğiniz kriterleri doldurun, boş bıraktıklarınız dikkate alınmaz.
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-1">Yeni Filtre Kuralı</h5>
+                    <p class="text-muted small">E-postaları ayıklamak için hedef kelimeleri belirleyin.</p>
+                </div>
+
+                <div class="alert bg-light border text-muted small mb-4 d-flex align-items-center rounded-3">
+                    <i class="fas fa-lightbulb text-primary fs-5 me-3"></i>
+                    <div>
+                        Tüm alanları doldurmak zorunda değilsiniz. Sadece filtrelemek istediğiniz kriterleri doldurun, boş bıraktıklarınız dikkate alınmaz.
                     </div>
                 </div>
 
                 <form asp-action="Create" method="post">
                     <input type="hidden" asp-for="EmailAccountId" />
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small mb-4"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger small rounded-3"></div>
 
                     <div class="mb-4">
-                        <label asp-for="SenderKeyword" class="form-label fw-bold text-secondary">Gönderen (İçeriyorsa)</label>
-                        <div class="input-group shadow-sm">
-                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-user-circle"></i></span>
-                            <input asp-for="SenderKeyword" class="form-control border-start-0 ps-0" placeholder="Örn: muhasebe@sirket.com" />
-                        </div>
+                        <label asp-for="SenderKeyword" class="form-label">Gönderen (İçeriyorsa)</label>
+                        <input asp-for="SenderKeyword" class="form-control bg-light border-0" placeholder="Örn: muhasebe@sirket.com" />
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="SubjectKeyword" class="form-label fw-bold text-secondary">Konu (İçeriyorsa)</label>
-                        <div class="input-group shadow-sm">
-                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-heading"></i></span>
-                            <input asp-for="SubjectKeyword" class="form-control border-start-0 ps-0" placeholder="Örn: Fatura, Acil, Sistem Uyarısı" />
-                        </div>
+                        <label asp-for="SubjectKeyword" class="form-label">Konu (İçeriyorsa)</label>
+                        <input asp-for="SubjectKeyword" class="form-control bg-light border-0" placeholder="Örn: Fatura, Acil, Sistem Uyarısı" />
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="BodyKeyword" class="form-label fw-bold text-secondary">E-Posta İçeriği (İçeriyorsa)</label>
-                        <div class="input-group shadow-sm">
-                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-align-left"></i></span>
-                            <input asp-for="BodyKeyword" class="form-control border-start-0 ps-0" placeholder="Örn: sunucu kapandı, onay kodu" />
-                        </div>
+                        <label asp-for="BodyKeyword" class="form-label">E-Posta İçeriği (İçeriyorsa)</label>
+                        <input asp-for="BodyKeyword" class="form-control bg-light border-0" placeholder="Örn: sunucu kapandı, onay kodu" />
                     </div>
 
-                    <hr class="text-muted my-4" />
-
-                    <div class="d-flex justify-content-end gap-3">
-                        <a asp-action="Index" asp-route-accountId="@Model.EmailAccountId" class="btn btn-light px-4 shadow-sm fw-bold text-muted">Vazgeç</a>
-                        <button type="submit" class="btn btn-info text-white px-4 shadow-sm fw-bold">
-                            <i class="fas fa-save me-2"></i>Kuralı Kaydet
-                        </button>
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <a asp-action="Index" asp-route-accountId="@Model.EmailAccountId" class="btn btn-light border text-secondary fw-semibold px-4">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary fw-semibold px-4">Kuralı Kaydet</button>
                     </div>
                 </form>
             </div>

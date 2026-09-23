@@ -149,6 +149,9 @@ namespace EmailToSms.Api.Services
                     isSuccess: false,
                     accountId: account.Id
                 );
+
+                // DÜZELTME: Hatayı yeniden fırlatıyoruz ki worker bu hesabı "başarıyla tarandı" olarak loglamasın
+                throw;
             }
         }
     }

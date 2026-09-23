@@ -3,40 +3,38 @@
     ViewData["Title"] = "Kural Düzenle";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card stat-card border-0 shadow-sm mt-3 border-top border-warning border-3">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-pen-square me-2 text-warning"></i>Kuralı Güncelle</h5>
-            </div>
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-7">
+        <div class="card stat-card border-0">
             <div class="card-body p-4 p-md-5">
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-1">Kuralı Güncelle</h5>
+                    <p class="text-muted small">Mevcut filtreleme kriterlerini düzenliyorsunuz.</p>
+                </div>
+
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="EmailAccountId" />
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small mb-4"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger small rounded-3"></div>
 
                     <div class="mb-4">
-                        <label asp-for="SenderKeyword" class="form-label fw-bold text-secondary">Gönderen (İçeriyorsa)</label>
-                        <input asp-for="SenderKeyword" class="form-control form-control-lg shadow-sm" />
+                        <label asp-for="SenderKeyword" class="form-label">Gönderen (İçeriyorsa)</label>
+                        <input asp-for="SenderKeyword" class="form-control bg-light border-0" />
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="SubjectKeyword" class="form-label fw-bold text-secondary">Konu (İçeriyorsa)</label>
-                        <input asp-for="SubjectKeyword" class="form-control form-control-lg shadow-sm" />
+                        <label asp-for="SubjectKeyword" class="form-label">Konu (İçeriyorsa)</label>
+                        <input asp-for="SubjectKeyword" class="form-control bg-light border-0" />
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="BodyKeyword" class="form-label fw-bold text-secondary">E-Posta İçeriği (İçeriyorsa)</label>
-                        <input asp-for="BodyKeyword" class="form-control form-control-lg shadow-sm" />
+                        <label asp-for="BodyKeyword" class="form-label">E-Posta İçeriği (İçeriyorsa)</label>
+                        <input asp-for="BodyKeyword" class="form-control bg-light border-0" />
                     </div>
 
-                    <hr class="text-muted my-4" />
-
-                    <div class="d-flex justify-content-end gap-3">
-                        <a asp-action="Index" asp-route-accountId="@Model.EmailAccountId" class="btn btn-light px-4 shadow-sm fw-bold text-muted">İptal</a>
-                        <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark">
-                            <i class="fas fa-check-circle me-2"></i>Değişiklikleri Uygula
-                        </button>
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <a asp-action="Index" asp-route-accountId="@Model.EmailAccountId" class="btn btn-light border text-secondary fw-semibold px-4">İptal</a>
+                        <button type="submit" class="btn btn-primary fw-semibold px-4">Değişiklikleri Kaydet</button>
                     </div>
                 </form>
             </div>

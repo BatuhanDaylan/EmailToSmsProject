@@ -1,58 +1,56 @@
 ﻿@model EmailToSms.Web.ViewModels.EmailAccountUpdateViewModel
 @{
-    ViewData["Title"] = "Hesap Güncelle";
+    ViewData["Title"] = "Kanal Ayarları";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card stat-card border-0 shadow-sm mt-3 border-top border-warning border-3">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-pen-square me-2 text-warning"></i>Hesap Bilgilerini Güncelle</h5>
-            </div>
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-7">
+        <div class="card stat-card border-0">
             <div class="card-body p-4 p-md-5">
-                <div class="alert alert-warning border-0 small mb-4 d-flex align-items-center">
-                    <i class="fas fa-shield-alt fs-4 me-3 text-warning"></i>
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-1">Kanalı Düzenle</h5>
+                    <p class="text-muted small">Mevcut entegrasyon ayarlarını güncelliyorsunuz.</p>
+                </div>
+
+                <div class="alert bg-light border text-muted small mb-4 d-flex align-items-center rounded-3">
+                    <i class="fas fa-shield-alt text-warning fs-5 me-3"></i>
                     <div>
-                        <strong>Güvenlik Önlemi:</strong> API şifreleri (Secret) veritabanında korunmaktadır. Güncelleme yaparken mevcut değerleri yeniden girmeli veya yeni oluşturduğunuz anahtarları yazmalısınız.
+                        Güvenlik sebebiyle şifreler (Secret) ekranda gösterilmez. Güncelleme yaparken mevcut veya yeni şifrenizi girmelisiniz.
                     </div>
                 </div>
 
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="Id" />
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 small mb-4"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger small rounded-3"></div>
 
                     <div class="mb-4">
-                        <label asp-for="EmailAddress" class="form-label fw-bold text-secondary">Okunacak E-Posta Adresi</label>
-                        <input asp-for="EmailAddress" class="form-control form-control-lg shadow-sm" />
+                        <label asp-for="EmailAddress" class="form-label">Okunacak E-Posta Adresi</label>
+                        <input asp-for="EmailAddress" class="form-control bg-light border-0" />
                         <span asp-validation-for="EmailAddress" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="TenantId" class="form-label fw-bold text-secondary">Tenant ID</label>
-                        <input asp-for="TenantId" class="form-control form-control-lg font-monospace text-muted shadow-sm" />
+                        <label asp-for="TenantId" class="form-label">Tenant ID</label>
+                        <input asp-for="TenantId" class="form-control bg-light border-0" style="font-family: monospace;" />
                         <span asp-validation-for="TenantId" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
-                            <label asp-for="ClientId" class="form-label fw-bold text-secondary">Client ID</label>
-                            <input asp-for="ClientId" class="form-control form-control-lg font-monospace text-muted shadow-sm" />
+                            <label asp-for="ClientId" class="form-label">Client ID</label>
+                            <input asp-for="ClientId" class="form-control bg-light border-0" style="font-family: monospace;" />
                             <span asp-validation-for="ClientId" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="ClientSecret" class="form-label fw-bold text-secondary">Client Secret (Yeniden Girin)</label>
-                            <input asp-for="ClientSecret" class="form-control form-control-lg font-monospace shadow-sm border-warning" type="password" placeholder="Zorunlu alan..." />
+                            <label asp-for="ClientSecret" class="form-label">Client Secret <span class="text-danger">*</span></label>
+                            <input asp-for="ClientSecret" class="form-control bg-light border-0 border-bottom border-warning" style="font-family: monospace;" type="password" placeholder="Zorunlu alan..." />
                             <span asp-validation-for="ClientSecret" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
-                    <hr class="text-muted my-4" />
-
-                    <div class="d-flex justify-content-end gap-3">
-                        <a asp-action="Index" class="btn btn-light px-4 shadow-sm fw-bold text-muted">İptal</a>
-                        <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark">
-                            <i class="fas fa-check-circle me-2"></i>Değişiklikleri Uygula
-                        </button>
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-light border text-secondary fw-semibold px-4">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary fw-semibold px-4">Değişiklikleri Kaydet</button>
                     </div>
                 </form>
             </div>

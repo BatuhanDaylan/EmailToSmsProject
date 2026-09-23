@@ -1,29 +1,29 @@
 ﻿@model List<EmailToSms.Web.ViewModels.EmailAccountViewModel>
 @{
-    ViewData["Title"] = "E-Posta Hesaplarım";
+    ViewData["Title"] = "E-Posta Kanalları";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-end mb-4">
     <div>
-        <h3 class="text-secondary fw-bold mb-0"><i class="fas fa-inbox me-2 text-primary"></i>Dinlenen Hesaplar</h3>
-        <p class="text-muted mb-0 small">Sisteme entegre edilmiş Microsoft 365 hesaplarını yönetin.</p>
+        <h3 class="fw-bold text-dark mb-1" style="letter-spacing: -0.025em;">E-Posta Kanalları</h3>
+        <p class="text-muted mb-0" style="font-size: 0.95rem;">Sisteme bağlı Microsoft 365 hesaplarını yönetin.</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
-        <i class="fas fa-plus me-2"></i>Yeni Hesap Bağla
+    <a asp-action="Create" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus me-2"></i>Yeni Kanal Bağla
     </a>
 </div>
 
-<div class="card stat-card border-0 shadow-sm">
+<div class="card stat-card border-0">
     <div class="card-body p-0">
         @if (Model != null && Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-muted">
+                <table class="table table-hover align-middle">
+                    <thead>
                         <tr>
-                            <th class="ps-4">ID</th>
+                            <th class="ps-4">Kanal ID</th>
                             <th>E-Posta Adresi</th>
-                            <th>Son Kontrol (Senkronizasyon)</th>
+                            <th>Son Senkronizasyon</th>
                             <th>Durum</th>
                             <th class="text-end pe-4">İşlemler</th>
                         </tr>
@@ -32,56 +32,51 @@
                         @foreach (var account in Model)
                         {
                             <tr>
-                                <td class="ps-4 text-muted fw-bold">#@account.Id</td>
-                                <td>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary border px-3 py-2 fs-6">
-                                        <i class="fas fa-at me-1"></i> @account.EmailAddress
-                                    </span>
+                                <td class="ps-4 text-muted" style="font-family: monospace; font-size: 0.9rem;">
+                                    #@account.Id
                                 </td>
                                 <td>
-                                    <small class="text-muted fw-bold">
-                                        <i class="far fa-clock me-1 text-warning"></i>
-                                        @(account.LastChecked == DateTime.MinValue ? "Henüz Taranmadı" : account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
-                                    </small>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 border" style="width: 36px; height: 36px;">
+                                            <i class="fab fa-microsoft text-secondary"></i>
+                                        </div>
+                                        <span class="fw-semibold text-dark">@account.EmailAddress</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-muted" style="font-size: 0.85rem;">
+                                        @(account.LastChecked == DateTime.MinValue ? "Henüz taranmadı" : account.LastChecked.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
+                                    </span>
                                 </td>
                                 <td>
                                     @if (account.IsActive)
                                     {
-                                        <span class="badge bg-success bg-opacity-10 text-success border px-3 py-2">
-                                            <i class="fas fa-check-circle me-1"></i> Aktif
-                                        </span>
+                                        <span class="badge-soft-success"><i class="fas fa-circle me-1" style="font-size: 8px;"></i> Aktif</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border px-3 py-2">
-                                            <i class="fas fa-pause-circle me-1"></i> Pasif
-                                        </span>
+                                        <span class="badge-soft-danger"><i class="fas fa-circle me-1" style="font-size: 8px;"></i> Pasif</span>
                                     }
                                 </td>
                                 <td class="text-end pe-4">
-                                    <!-- Aktif / Pasif Yap Butonu -->
-                                    <form asp-action="ToggleStatus" asp-route-id="@account.Id" method="post" class="d-inline">
-                                        <button type="submit" class="btn btn-sm @(account.IsActive ? "btn-secondary" : "btn-success") shadow-sm me-1" title="@(account.IsActive ? "Pasife Al" : "Aktife Al")">
-                                            <i class="fas @(account.IsActive ? "fa-pause" : "fa-play") text-white"></i>
-                                        </button>
-                                    </form>
-
-                                    <!-- Kurallar Butonu -->
-                                    <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@account.Id" class="btn btn-sm btn-info text-white shadow-sm me-1" title="Kural Motoru">
-                                        <i class="fas fa-filter"></i> Kurallar
-                                    </a>
-
-                                    <!-- Düzenle Butonu -->
-                                    <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-sm btn-warning shadow-sm me-1" title="Düzenle">
-                                        <i class="fas fa-pen text-white"></i>
-                                    </a>
-
-                                    <!-- Sil Butonu (SweetAlert Entegreli Form) -->
-                                    <form asp-action="Delete" asp-route-id="@account.Id" method="post" class="d-inline delete-form">
-                                        <button type="button" class="btn btn-sm btn-danger shadow-sm btn-delete" title="Sil">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
+                                    <div class="btn-group shadow-sm border rounded">
+                                        <form asp-action="ToggleStatus" asp-route-id="@account.Id" method="post" class="m-0">
+                                            <button type="submit" class="btn btn-sm btn-light border-0 text-secondary" title="@(account.IsActive ? "Durdur" : "Başlat")">
+                                                <i class="fas @(account.IsActive ? "fa-pause" : "fa-play")"></i>
+                                            </button>
+                                        </form>
+                                        <a asp-controller="ForwardingRules" asp-action="Index" asp-route-accountId="@account.Id" class="btn btn-sm btn-light border-0 text-primary border-start border-end" title="Kurallar">
+                                            <i class="fas fa-filter"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-sm btn-light border-0 text-secondary border-end" title="Düzenle">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@account.Id" method="post" class="m-0 delete-form">
+                                            <button type="button" class="btn btn-sm btn-light border-0 text-danger btn-delete" title="Sil">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -92,12 +87,12 @@
         else
         {
             <div class="text-center py-5">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                    <i class="fas fa-envelope-open-text fs-1 text-muted"></i>
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 border" style="width: 70px; height: 70px;">
+                    <i class="fas fa-inbox fs-3 text-muted"></i>
                 </div>
-                <h5 class="text-secondary fw-bold">Henüz Hesap Eklenmemiş</h5>
-                <p class="text-muted">Sistemin e-postaları okuyabilmesi için yeni bir Microsoft hesabı tanımlayın.</p>
-                <a asp-action="Create" class="btn btn-outline-primary mt-2">İlk Hesabı Oluştur</a>
+                <h6 class="text-dark fw-bold">Bağlı Kanal Bulunmuyor</h6>
+                <p class="text-muted small mb-4">Sistemin çalışması için Microsoft 365 e-posta hesabınızı bağlayın.</p>
+                <a asp-action="Create" class="btn btn-primary shadow-sm">Kanal Eklemeye Başla</a>
             </div>
         }
     </div>
@@ -109,20 +104,17 @@
             $('.btn-delete').on('click', function(e) {
                 e.preventDefault();
                 var form = $(this).closest('form');
-
                 Swal.fire({
-                    title: 'Hesap Silinecek!',
-                    text: "Bu hesabı ve ona bağlı olan tüm filtre kurallarını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+                    title: 'Emin misiniz?',
+                    text: "Bu kanal ve ona bağlı tüm kurallar kalıcı olarak silinecektir.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fas fa-trash me-1"></i> Evet, Sil!',
-                    cancelButtonText: 'İptal'
+                    cancelButtonColor: '#e2e8f0',
+                    confirmButtonText: 'Evet, sil',
+                    cancelButtonText: '<span style="color:#334155">İptal</span>'
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit(); // Onaylanırsa formu gönder
-                    }
+                    if (result.isConfirmed) form.submit();
                 });
             });
         });
